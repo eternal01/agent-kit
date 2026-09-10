@@ -1,0 +1,16 @@
+# Runtime and generated files
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.log
+.DS_Store
+
+# Local/private configuration
+.env
+.env.*
+*.local.*
+
+# Migration backups must not enter this repository
+pi-backups/
