@@ -1,3 +1,3 @@
-# prompts
+# Prompts
 
-Content for this directory belongs to the portable Agent Kit. Keep it human-readable and independent of agent-specific SDKs or third-party dependencies.
+存放一次性任务和可复用的提示模板。

@@ -18,7 +18,7 @@
 - `rules/`：稳定的行为与质量规则。
 - `examples/`：跨技能示例。
 - `scripts/`：无第三方依赖的辅助脚本。
-- `adapters/`：可选的特定 Agent 集成。
+- `adapters/`：依赖特定 Agent SDK 或运行时的适配代码；Pi 扩展位于 `adapters/pi/extensions/`。
 
 ## 安装技能
 
@@ -34,4 +34,12 @@
 ./scripts/link-skills.sh --replace-copies
 ```
 
-需要稳定快照或目标环境不支持软链接时，仍可使用 `./scripts/build-skills.sh` 复制安装。两个脚本都支持通过 `AGENT_SKILLS_DIR` 覆盖目标；执行前应先审查，Agent 通常需要重启才能重新发现技能。详见[脚本说明](scripts/README.md)。
+需要稳定快照或目标环境不支持软链接时，仍可使用 `./scripts/build-skills.sh` 复制安装。两个脚本都支持通过 `AGENT_SKILLS_DIR` 覆盖目标；执行前应先审查，Agent 通常需要重启才能重新发现技能。
+
+Pi 专属 extensions 保存在 `adapters/pi/extensions/`，使用同样的安装方式：
+
+```bash
+./scripts/link-pi-extensions.sh
+```
+
+源码虽然归入专属 adapter，运行时仍安装到 Pi 原生路径 `~/.pi/agent/extensions/`；可通过 `PI_EXTENSIONS_DIR` 覆盖目标。详见[Pi 适配说明](adapters/pi/README.md)和[脚本说明](scripts/README.md)。

@@ -1,3 +1,3 @@
-# rules
+# Rules
 
-Content for this directory belongs to the portable Agent Kit. Keep it human-readable and independent of agent-specific SDKs or third-party dependencies.
+存放稳定的行为约束、质量规则和项目级约定。

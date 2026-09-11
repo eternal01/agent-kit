@@ -1,3 +1,3 @@
-# examples
+# Examples
 
-Content for this directory belongs to the portable Agent Kit. Keep it human-readable and independent of agent-specific SDKs or third-party dependencies.
+存放可跨技能复用的最小示例。
