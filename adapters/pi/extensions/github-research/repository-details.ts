@@ -51,6 +51,7 @@ export interface PiResourceVerification {
   verified: boolean;
   resources: string[];
   reasons: string[];
+  errors?: string[];
 }
 
 export function verifyPiResources(input: { packageJson?: Record<string, any>; paths: string[] }): PiResourceVerification {
@@ -75,6 +76,47 @@ export function verifyPiResources(input: { packageJson?: Record<string, any>; pa
     reasons.push("repository contains an extensions code layout");
   }
   return { verified: resources.length > 0, resources, reasons };
+}
+
+export async function inspectPiResources(
+  repository: string,
+  defaultBranch = "main",
+  options: Pick<RepositoryInspectionOptions, "signal" | "cacheTtlMs"> = {},
+): Promise<PiResourceVerification> {
+  const fullName = validateRepositoryName(repository);
+  const branch = encodeURIComponent(defaultBranch);
+  const errors: string[] = [];
+  const cacheTtlMs = options.cacheTtlMs ?? 300_000;
+  const treeRaw = await optionalGh(`repos/${fullName}/git/trees/${branch}?recursive=1`, "repository_tree", errors, options.signal, cacheTtlMs);
+  let tree: { tree?: Array<{ path?: string }> } = {};
+  try { tree = JSON.parse(treeRaw); } catch { /* Missing trees are reported as unverified. */ }
+  const paths = (tree.tree ?? []).map((entry) => entry.path).filter((path): path is string => Boolean(path));
+  let packageJson: Record<string, any> = {};
+  if (paths.some((path) => path === "package.json")) {
+    const packageRaw = await optionalGh(`repos/${fullName}/contents/package.json?ref=${branch}`, "package_json", errors, options.signal, cacheTtlMs);
+    try {
+      const response = JSON.parse(packageRaw) as { content?: string };
+      if (response.content) packageJson = JSON.parse(Buffer.from(response.content.replace(/\s/g, ""), "base64").toString("utf8"));
+    } catch { /* Invalid or unavailable package metadata is not verification evidence. */ }
+  }
+  return { ...verifyPiResources({ packageJson, paths }), errors };
+}
+
+export function selectVerifiedPiRepositories(
+  candidates: Record<string, any>[],
+  verifications: Map<string, PiResourceVerification>,
+  limit: number,
+): Record<string, any>[] {
+  return candidates.flatMap((candidate) => {
+    const verification = typeof candidate.full_name === "string" ? verifications.get(candidate.full_name) : undefined;
+    if (!verification?.verified) return [];
+    return [{
+      ...candidate,
+      pi_package_verified: true,
+      pi_resources: verification.resources,
+      pi_verification_reasons: verification.reasons,
+    }];
+  }).slice(0, limit);
 }
 
 export function validateRepositoryName(value: string): string {
@@ -103,8 +145,8 @@ export async function inspectRepository(
     includeReadme ? optionalGh(`repos/${fullName}/readme`, "readme", evidenceErrors, signal, cacheTtlMs) : "",
     optionalGh(`repos/${fullName}/releases?per_page=10`, "releases", evidenceErrors, signal, cacheTtlMs),
     analyzeMaturity ? optionalGh(`repos/${fullName}/contributors?per_page=100&anon=true`, "contributors", evidenceErrors, signal, cacheTtlMs) : "",
-    analyzeMaturity ? optionalGh(`repos/${fullName}/git/trees/${branch}?recursive=1`, "repository_tree", evidenceErrors, signal, cacheTtlMs) : "",
-    analyzeMaturity ? optionalGh(`repos/${fullName}/contents/package.json?ref=${branch}`, "package_json", evidenceErrors, signal, cacheTtlMs) : "",
+    optionalGh(`repos/${fullName}/git/trees/${branch}?recursive=1`, "repository_tree", evidenceErrors, signal, cacheTtlMs),
+    optionalGh(`repos/${fullName}/contents/package.json?ref=${branch}`, "package_json", evidenceErrors, signal, cacheTtlMs),
     analyzeMaturity ? optionalGh(`repos/${fullName}/issues?state=open&sort=created&direction=asc&per_page=100`, "open_issues", evidenceErrors, signal, cacheTtlMs) : "",
     analyzeMaturity ? optionalGh(`repos/${fullName}/issues?state=closed&sort=updated&direction=desc&per_page=30`, "closed_issues", evidenceErrors, signal, cacheTtlMs) : "",
   ]);
@@ -191,29 +233,30 @@ export async function inspectRepository(
 }
 
 export function compactRepositoryEvidence(evidence: RepositoryEvidence, includeReadme: boolean): Record<string, any> {
+  const architecture = evidence.architecture_signals ? {
+    ...evidence.architecture_signals,
+    top_level_areas: evidence.architecture_signals.top_level_areas?.slice(0, 8),
+  } : evidence.architecture_signals;
+  const maturity = evidence.maturity ? {
+    score: evidence.maturity.score,
+    grade: evidence.maturity.grade,
+    warnings: evidence.maturity.warnings,
+  } : evidence.maturity;
   const compact = {
     full_name: evidence.full_name,
-    html_url: evidence.html_url,
-    description: evidence.description,
-    license: evidence.license,
-    topics: evidence.topics,
-    stargazers_count: evidence.stargazers_count,
-    forks_count: evidence.forks_count,
-    pushed_at: evidence.pushed_at,
-    archived: evidence.archived,
     latest_release: evidence.release_sample?.[0] ?? null,
     release_sample_count: evidence.release_sample?.length ?? 0,
     contributor_sample_count: evidence.contributor_sample_count,
     contributor_count_capped: evidence.contributor_count_capped,
     issue_metrics: evidence.issue_metrics,
     engineering_signals: evidence.engineering_signals,
-    architecture_signals: evidence.architecture_signals,
+    architecture_signals: architecture,
     pi_package_verified: evidence.pi_package_verified,
     pi_resources: evidence.pi_resources,
     pi_verification_reasons: evidence.pi_verification_reasons,
     repository_tree_truncated: evidence.repository_tree_truncated,
-    evidence_collection_errors: evidence.evidence_collection_errors,
-    maturity: evidence.maturity,
+    evidence_collection_errors: evidence.evidence_collection_errors?.slice(0, 5).map((error: string) => error.slice(0, 300)),
+    maturity,
   } as Record<string, any>;
   if (includeReadme && evidence.readme_excerpt) compact.readme_excerpt = evidence.readme_excerpt;
   return compact;

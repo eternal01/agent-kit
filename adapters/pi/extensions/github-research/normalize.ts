@@ -5,16 +5,17 @@ export function normalizeItem(item: SearchItem, type: SearchType): Record<string
     return {
       full_name: item.full_name,
       name: item.name,
-      description: item.description,
+      description: typeof item.description === "string" ? item.description.slice(0, 240) : item.description,
       html_url: item.html_url,
       stargazers_count: item.stargazers_count,
       forks_count: item.forks_count,
       language: item.language,
-      topics: item.topics,
+      topics: Array.isArray(item.topics) ? item.topics.slice(0, 10) : item.topics,
       license: item.license && (item.license as { spdx_id?: string }).spdx_id,
       updated_at: item.updated_at,
       pushed_at: item.pushed_at,
       archived: item.archived,
+      default_branch: item.default_branch,
     };
   }
 

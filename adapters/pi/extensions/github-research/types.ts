@@ -7,6 +7,7 @@ export interface ResearchInput {
   type?: SearchType;
   language?: string;
   min_stars?: number;
+  pi_resources_only?: boolean;
   sort?: SearchSort;
   limit?: number;
   inspect_top?: number;

@@ -6,7 +6,7 @@ import { mapConcurrent } from "./concurrency.ts";
 import { formatDoctorReport, runDoctor } from "./doctor.ts";
 import { runGhCached } from "./github-client.ts";
 import { buildSearchPlans, buildSearchQuery, endpointFor } from "./query-builder.ts";
-import { compactRepositoryEvidence, inspectRepository, validateRepositoryName } from "./repository-details.ts";
+import { compactRepositoryEvidence, inspectPiResources, inspectRepository, selectVerifiedPiRepositories, validateRepositoryName } from "./repository-details.ts";
 import { serializeBounded } from "./security.ts";
 import type { ResearchInput, SearchPage, SearchSort, SearchType } from "./types.ts";
 
@@ -23,6 +23,7 @@ const inputSchema = Type.Object({
   ], { default: "repositories", description: "搜索对象类型" })),
   language: Type.Optional(Type.String({ description: "编程语言过滤，例如 Go、TypeScript" })),
   min_stars: Type.Optional(Type.Integer({ minimum: 0, description: "最低 Star 数，仅适用于仓库搜索" })),
+  pi_resources_only: Type.Optional(Type.Boolean({ default: false, description: "仅返回经 package.json 声明或约定目录验证的 Pi Skill/Extension 仓库；仅适用于仓库搜索" })),
   sort: Type.Optional(Type.Union([
     Type.Literal("stars"),
     Type.Literal("forks"),
@@ -70,7 +71,11 @@ export default function (pi: ExtensionAPI) {
     async execute(_toolCallId, rawInput, signal) {
       const input = rawInput as ResearchInput;
       const type: SearchType = input.type ?? "repositories";
+      if (input.pi_resources_only && type !== "repositories") {
+        throw new Error("pi_resources_only 仅适用于 repositories 搜索");
+      }
       const limit = input.limit ?? 10;
+      const candidateLimit = input.pi_resources_only ? Math.min(100, Math.max(limit * 3, 30)) : limit;
       const inspectTop = Math.min(input.inspect_top ?? 3, limit);
       const readmeTop = Math.min(input.readme_top ?? 0, inspectTop);
       const maxPages = input.max_pages ?? 1;
@@ -98,7 +103,7 @@ export default function (pi: ExtensionAPI) {
               break;
             }
             remainingSearchRequests -= 1;
-            const params = new URLSearchParams({ q: executionPlan.query, per_page: String(limit), page: String(page) });
+            const params = new URLSearchParams({ q: executionPlan.query, per_page: String(candidateLimit), page: String(page) });
             if (type === "repositories" && (sort === "stars" || sort === "forks" || sort === "updated")) {
               params.set("sort", sort);
               params.set("order", "desc");
@@ -111,7 +116,7 @@ export default function (pi: ExtensionAPI) {
             const pageItems = payload.items ?? [];
             totalCount = payload.total_count ?? totalCount;
             pages.push({ plan: executionPlan, page, items: pageItems });
-            if (pageItems.length < limit) break;
+            if (pageItems.length < candidateLimit) break;
           }
           return { plan: executionPlan, pages, totalCount };
         } catch (error) {
@@ -128,7 +133,22 @@ export default function (pi: ExtensionAPI) {
       const pages = queryRuns.flatMap((run) => run.pages);
       const firstError = queryRuns.find((run) => run.error)?.error;
       if (pages.length === 0 && firstError) throw new Error(firstError);
-      const items = aggregateSearchHits(pages, type, sort, limit);
+      const candidates = aggregateSearchHits(pages, type, sort, candidateLimit);
+      let items = candidates;
+      const piResourceVerifications = new Map();
+      if (input.pi_resources_only) {
+        const verificationResults = await mapConcurrent(candidates, concurrency, async (candidate) => {
+          const name = typeof candidate.full_name === "string" ? candidate.full_name : "";
+          if (!name) return { name, verification: { verified: false, resources: [], reasons: ["missing full_name"] } };
+          const branch = typeof candidate.default_branch === "string" ? candidate.default_branch : "main";
+          const verification = await inspectPiResources(name, branch, { signal, cacheTtlMs });
+          return { name, verification };
+        });
+        for (const result of verificationResults) piResourceVerifications.set(result.name, result.verification);
+        items = selectVerifiedPiRepositories(candidates, piResourceVerifications, limit);
+      } else {
+        items = candidates.slice(0, limit);
+      }
       const inspections: Record<string, unknown>[] = [];
 
       if (type === "repositories" && inspectTop > 0) {
@@ -163,6 +183,8 @@ export default function (pi: ExtensionAPI) {
         type,
         sort,
         unique_result_count: items.length,
+        candidate_count_before_pi_filter: input.pi_resources_only ? candidates.length : undefined,
+        pi_resources_only: input.pi_resources_only ?? false,
         aggregate_total_count: queryRuns.reduce((sum, run) => sum + run.totalCount, 0),
         request_budget: SEARCH_REQUEST_BUDGET,
         request_budget_exhausted: requestBudgetExhausted,

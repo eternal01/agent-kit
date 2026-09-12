@@ -7,7 +7,8 @@ export function trendingScore(item: SearchItem, matchCount: number, now = new Da
   const pushedAt = typeof item.pushed_at === "string" ? Date.parse(item.pushed_at) : Number.NaN;
   const ageDays = Number.isFinite(pushedAt) ? Math.max(0, (now.getTime() - pushedAt) / 86_400_000) : 3650;
   const recency = ageDays <= 7 ? 20 : ageDays <= 30 ? 15 : ageDays <= 90 ? 9 : ageDays <= 180 ? 4 : 0;
-  return matchCount * 8 + stars + forks + recency;
+  const archivePenalty = item.archived === true ? 1_000 : 0;
+  return matchCount * 8 + stars + forks + recency - archivePenalty;
 }
 
 interface AggregateEntry {

@@ -51,14 +51,15 @@ gh auth status
 - `max_pages`：每个查询最多读取 5 页
 - `concurrency`：限制并发查询数，范围 1–5
 - `cache_ttl_seconds`：成功 GET 请求的进程内短期缓存，默认 300 秒
-- `sort: trending`：综合查询命中次数、Star/Fork 和最近 push；这是启发式热度，不是 GitHub 官方趋势数据
+- `sort: trending`：综合查询命中次数、Star/Fork 和最近 push；归档仓库会被硬降权；这是启发式热度，不是 GitHub 官方趋势数据
+- `pi_resources_only`：仅保留由 `package.json#pi` 或约定目录验证的 Pi Skill/Extension 仓库；扩展会先扩大候选池、验证，再应用最终 `limit`
 - `inspect_top`：对最多 20 个候选执行紧凑成熟度分析
 - `readme_top`：仅为前 0–5 个被检查仓库附带 README，默认 0
 - `analyze_maturity`：采集工程、社区和维护证据，默认启用
 
 多查询结果按仓库、代码位置或 Issue/PR URL 去重，并附带 `match_count`、`matched_queries` 和 `match_origins`。单次工具调用最多发出 25 个 Search API 请求，避免无界分页快速耗尽 GitHub Search 限额；达到预算时返回 `request_budget_exhausted: true`。
 
-批量结果只返回最新 Release 和 Release 样本数量，不返回完整 Release 列表；README 也默认关闭。需要核验具体候选时，再调用 `github_repository_details`。这种两阶段协议可以保留 Top 20 比较结果，避免 README 挤占输出预算。
+批量结果只返回最新 Release 和 Release 样本数量，不返回完整 Release 列表；README 也默认关闭。需要核验具体候选时，再调用 `github_repository_details`。输出超限时会逐级裁剪 README 和可选证据，但保留全部结果及检查项的身份，不再通过删除尾部候选满足预算。
 
 仓库详情还会检查 `package.json#pi.extensions`、`package.json#pi.skills` 以及 `extensions/`、`skills/` 文件布局，并返回 `pi_package_verified`、`pi_resources` 和 `pi_verification_reasons`。仅在 README 中提到 Pi 不会被视为 Pi 扩展。
 
