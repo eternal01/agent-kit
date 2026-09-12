@@ -1,0 +1,36 @@
+{
+  "positive": [
+    {
+      "request": "创建一个新的 Agent Skill",
+      "expected": "skill-authoring"
+    },
+    {
+      "request": "评审这个 SKILL.md 的触发边界",
+      "expected": "skill-authoring"
+    },
+    {
+      "request": "合并两个职责重叠的 Skill",
+      "expected": "skill-authoring"
+    }
+  ],
+  "negative": [
+    {
+      "request": "执行 systematic-debugging 的故障调查",
+      "forbidden": [
+        "skill-authoring"
+      ]
+    },
+    {
+      "request": "为系统选择数据库",
+      "forbidden": [
+        "skill-authoring"
+      ]
+    },
+    {
+      "request": "写一篇个人学习笔记",
+      "forbidden": [
+        "skill-authoring"
+      ]
+    }
+  ]
+}

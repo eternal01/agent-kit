@@ -1,0 +1,36 @@
+{
+  "positive": [
+    {
+      "request": "设计跨服务边界和数据流",
+      "expected": "system-architecture"
+    },
+    {
+      "request": "为系统给出 C4 架构图和质量属性分析",
+      "expected": "system-architecture"
+    },
+    {
+      "request": "规划跨区域部署、故障隔离和数据所有权",
+      "expected": "system-architecture"
+    }
+  ],
+  "negative": [
+    {
+      "request": "设计单页面的用户交互",
+      "forbidden": [
+        "system-architecture"
+      ]
+    },
+    {
+      "request": "比较 Redis 和 Memcached",
+      "forbidden": [
+        "system-architecture"
+      ]
+    },
+    {
+      "request": "记录已经确定的单项 ADR",
+      "forbidden": [
+        "system-architecture"
+      ]
+    }
+  ]
+}

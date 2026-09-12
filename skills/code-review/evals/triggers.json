@@ -1,0 +1,36 @@
+{
+  "positive": [
+    {
+      "request": "审查这个 PR 是否可以合并",
+      "expected": "code-review"
+    },
+    {
+      "request": "检查当前 diff 中有没有正确性问题",
+      "expected": "code-review"
+    },
+    {
+      "request": "对提交 abc123 做只读代码审查",
+      "expected": "code-review"
+    }
+  ],
+  "negative": [
+    {
+      "request": "请直接修复这个测试失败",
+      "forbidden": [
+        "code-review"
+      ]
+    },
+    {
+      "request": "制定项目编码规范",
+      "forbidden": [
+        "code-review"
+      ]
+    },
+    {
+      "request": "为新系统设计服务边界",
+      "forbidden": [
+        "code-review"
+      ]
+    }
+  ]
+}

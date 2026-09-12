@@ -1,0 +1,8 @@
+{
+  "positive": [
+    { "request": "do alpha one", "expected": "unknown-skill" }
+  ],
+  "negative": [
+    { "request": "do alpha one", "forbidden": ["alpha", "unknown-skill"] }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "positive": [
+    {
+      "request": "联网核验这个框架的当前版本",
+      "expected": "web-research"
+    },
+    {
+      "request": "查官方文档确认 API 是否仍受支持",
+      "expected": "web-research"
+    },
+    {
+      "request": "搜索最新漏洞公告并给出来源",
+      "expected": "web-research"
+    }
+  ],
+  "negative": [
+    {
+      "request": "只根据当前仓库解释函数行为",
+      "forbidden": [
+        "web-research"
+      ]
+    },
+    {
+      "request": "把已有资料写成学习文章",
+      "forbidden": [
+        "web-research"
+      ]
+    },
+    {
+      "request": "直接修改代码修复问题",
+      "forbidden": [
+        "web-research"
+      ]
+    }
+  ]
+}

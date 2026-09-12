@@ -17,9 +17,12 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: adapters/pi/extensions/github-research/package-lock.json
+          cache-dependency-path: |
+            adapters/pi/extensions/anytype/package-lock.json
+            adapters/pi/extensions/github-research/package-lock.json
       - name: Install extension dependencies without lifecycle scripts
-        working-directory: adapters/pi/extensions/github-research
-        run: npm ci --ignore-scripts
+        run: |
+          npm ci --ignore-scripts --prefix adapters/pi/extensions/anytype
+          npm ci --ignore-scripts --prefix adapters/pi/extensions/github-research
       - name: Verify Pi extensions
         run: ./scripts/verify-pi-extensions.sh

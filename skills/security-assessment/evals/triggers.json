@@ -1,0 +1,36 @@
+{
+  "positive": [
+    {
+      "request": "为这个 API 做威胁建模",
+      "expected": "security-assessment"
+    },
+    {
+      "request": "审查仓库的供应链和密钥泄露风险",
+      "expected": "security-assessment"
+    },
+    {
+      "request": "分析多租户系统的攻击面和信任边界",
+      "expected": "security-assessment"
+    }
+  ],
+  "negative": [
+    {
+      "request": "普通审查这个小型重命名 PR",
+      "forbidden": [
+        "security-assessment"
+      ]
+    },
+    {
+      "request": "直接修复已经确认的 SQL 注入",
+      "forbidden": [
+        "security-assessment"
+      ]
+    },
+    {
+      "request": "查询某 CVE 影响哪些版本",
+      "forbidden": [
+        "security-assessment"
+      ]
+    }
+  ]
+}

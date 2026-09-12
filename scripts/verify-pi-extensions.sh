@@ -30,8 +30,10 @@ done < <(find "$repo_root/scripts" "$repo_root/tests/scripts" -type f -name '*.s
 printf 'Shell syntax: OK\n'
 
 bash "$repo_root/tests/scripts/pi-extension-install.test.sh"
-node --test "$repo_root/tests/skills/validate-skills.test.mjs"
-node "$repo_root/scripts/validate-skills.mjs" "$repo_root/skills"
+bash "$repo_root/tests/scripts/skill-install.test.sh"
+node --test "$repo_root/tests/skills/validate-skills.test.mjs" "$repo_root/tests/scripts/check-docs.test.mjs"
+"$repo_root/scripts/validate-skills.mjs" "$repo_root/skills"
+"$repo_root/scripts/check-docs.mjs" "$repo_root"
 
 for extension_dir in "$source_dir"/*; do
   [[ -d "$extension_dir" && -f "$extension_dir/package.json" ]] || continue

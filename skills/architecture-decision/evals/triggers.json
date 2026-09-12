@@ -1,0 +1,36 @@
+{
+  "positive": [
+    {
+      "request": "把刚才确定的数据库分片决策写成 ADR",
+      "expected": "architecture-decision"
+    },
+    {
+      "request": "评审 docs/adr/004-cache.md 是否完整",
+      "expected": "architecture-decision"
+    },
+    {
+      "request": "用新决策替代旧 ADR 并保留演进关系",
+      "expected": "architecture-decision"
+    }
+  ],
+  "negative": [
+    {
+      "request": "从零设计订单系统架构",
+      "forbidden": [
+        "architecture-decision"
+      ]
+    },
+    {
+      "request": "比较 PostgreSQL 和 MySQL",
+      "forbidden": [
+        "architecture-decision"
+      ]
+    },
+    {
+      "request": "直接实现缓存功能",
+      "forbidden": [
+        "architecture-decision"
+      ]
+    }
+  ]
+}

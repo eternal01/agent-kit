@@ -1,0 +1,36 @@
+{
+  "positive": [
+    {
+      "request": "为这个仓库制定 TypeScript 编码规范",
+      "expected": "coding-standards"
+    },
+    {
+      "request": "把 lint 和类型检查落成 CI 门禁",
+      "expected": "coding-standards"
+    },
+    {
+      "request": "更新团队的测试命名约定",
+      "expected": "coding-standards"
+    }
+  ],
+  "negative": [
+    {
+      "request": "审查这个 PR 的具体缺陷",
+      "forbidden": [
+        "coding-standards"
+      ]
+    },
+    {
+      "request": "实现用户登录功能",
+      "forbidden": [
+        "coding-standards"
+      ]
+    },
+    {
+      "request": "设计微服务架构",
+      "forbidden": [
+        "coding-standards"
+      ]
+    }
+  ]
+}

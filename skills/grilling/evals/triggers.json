@@ -1,0 +1,36 @@
+{
+  "positive": [
+    {
+      "request": "这个生产迁移方案风险很高，请挑战我的假设",
+      "expected": "grilling"
+    },
+    {
+      "request": "需求存在重大歧义，逐项追问我",
+      "expected": "grilling"
+    },
+    {
+      "request": "压力测试方案并把确认的决定写入 DECISIONS.md",
+      "expected": "grilling"
+    }
+  ],
+  "negative": [
+    {
+      "request": "把明确的变量名改一下",
+      "forbidden": [
+        "grilling"
+      ]
+    },
+    {
+      "request": "查询当前 Node.js 最新版本",
+      "forbidden": [
+        "grilling"
+      ]
+    },
+    {
+      "request": "按已确认计划修改一个文档链接",
+      "forbidden": [
+        "grilling"
+      ]
+    }
+  ]
+}

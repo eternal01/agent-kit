@@ -1,55 +1,67 @@
 # Agent Kit
 
-面向 IT 系统架构工作流的可移植知识与技能库，核心内容不依赖特定 Agent SDK。
+一组可移植的 Agent Skills，以及为 Pi 编写的本地扩展。Skill 处理需求澄清、架构、实施、审查、调试、文档、学习笔记和安全评估；扩展提供 GitHub 调研与 Anytype 访问。
 
-## 设计原则
+## 从任务开始
 
-- 技能单一职责，触发描述同时声明适用与排除范围。
-- `SKILL.md` 只放核心流程；细节按需放入 `references/`。
-- 先基于证据工作，明确区分事实、推断和待确认项。
-- 优先简单、可验证、可演进和可回滚的方案。
-- 运行状态、凭据、缓存和第三方依赖不进入仓库。
+- 不确定该用哪个 Skill：查看[任务索引](skills/README.md)。
+- 安装或更新 Skill：运行 `./scripts/link-skills.sh`。
+- 使用 Pi 扩展：查看[Pi 扩展](adapters/pi/README.md)。
+- 修改 Skill 或扩展：先运行对应验证，再运行仓库级检查。
 
-## 目录
+## 安装 Skills
 
-- `skills/`：按需加载的工作流，详见 [技能目录](skills/README.md)。
-- `knowledge/`：长期知识、实践和故障记录。
-- `prompts/`：一次性任务的提示模板。
-- `rules/`：稳定的行为与质量规则。
-- `examples/`：跨技能示例。
-- `scripts/`：无第三方依赖的辅助脚本。
-- `adapters/`：依赖特定 Agent SDK 或运行时的适配代码；Pi 扩展位于 `adapters/pi/extensions/`。
-
-## 安装技能
-
-本仓库作为技能的唯一维护源时，推荐逐个链接到多个 Agent 共用的 `~/.agents/skills/`：
+开发环境建议使用软链接，使仓库修改立即生效：
 
 ```bash
 ./scripts/link-skills.sh
 ```
 
-首次从旧的复制安装迁移时，显式允许替换同名技能副本：
+首次替换旧的复制安装：
 
 ```bash
 ./scripts/link-skills.sh --replace-copies
 ```
 
-需要稳定快照或目标环境不支持软链接时，仍可使用 `./scripts/build-skills.sh` 复制安装。两个脚本都支持通过 `AGENT_SKILLS_DIR` 覆盖目标；执行前应先审查，Agent 通常需要重启才能重新发现技能。
+需要独立快照时使用：
 
-本项目不增加运行时 Skill 注册表，沿用各 Agent 的原生发现机制。Skill 静态质量门禁可通过 `node ./scripts/validate-skills.mjs` 执行。
+```bash
+./scripts/build-skills.sh
+```
 
-Pi 专属 extensions 保存在 `adapters/pi/extensions/`，使用同样的安装方式：
+默认目标是 `~/.agents/skills/`。设置 `AGENT_SKILLS_DIR` 可以改到其他目录。Agent 通常需要重启才能重新发现 Skill。
+
+## 安装 Pi 扩展
 
 ```bash
 ./scripts/link-pi-extensions.sh
 ```
 
-源码虽然归入专属 adapter，运行时仍安装到 Pi 原生路径 `~/.pi/agent/extensions/`；可通过 `PI_EXTENSIONS_DIR` 覆盖目标。替换已有副本前会创建可恢复备份，卸载和验证命令如下：
+默认目标是 `~/.pi/agent/extensions/`。安装、备份、恢复和卸载行为见[脚本说明](scripts/README.md)。
+
+## 验证
 
 ```bash
-./scripts/uninstall-pi-extensions.sh --restore-latest
+./scripts/validate-skills.mjs
+./scripts/check-docs.mjs
+node --test ./tests/skills/validate-skills.test.mjs ./tests/scripts/check-docs.test.mjs
 ./scripts/verify-pi-extensions.sh
+```
+
+需要同时检查 `gh` 认证、GitHub API 和 Pi 实际加载时：
+
+```bash
 ./scripts/verify-pi-extensions.sh --live
 ```
 
-详见[Pi 适配说明](adapters/pi/README.md)和[脚本说明](scripts/README.md)。
+Skill 验证器检查结构和触发契约，不调用模型。它不能代替真实 Agent 中的行为回放。
+
+## 目录
+
+- `skills/`：自包含的工作流和按需资料。
+- `rules/`：本仓库特有的稳定约定。
+- `adapters/pi/`：依赖 Pi SDK 或运行时的扩展。
+- `scripts/`：安装、卸载和验证脚本。
+- `tests/`：脚本、Skill 和扩展的测试。
+
+凭据、缓存、运行状态和第三方仓库内容不进入版本库。

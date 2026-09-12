@@ -1,0 +1,36 @@
+{
+  "positive": [
+    {
+      "request": "把这篇博客整理成供我复习的 Anytype 笔记",
+      "expected": "learning-note"
+    },
+    {
+      "request": "我想系统学习 MVCC，生成一篇学习文章",
+      "expected": "learning-note"
+    },
+    {
+      "request": "检索我的知识库并整理一份 OAuth 复习材料",
+      "expected": "learning-note"
+    }
+  ],
+  "negative": [
+    {
+      "request": "重写项目 README",
+      "forbidden": [
+        "learning-note"
+      ]
+    },
+    {
+      "request": "核验 Kubernetes 当前最新版本",
+      "forbidden": [
+        "learning-note"
+      ]
+    },
+    {
+      "request": "创建一份系统架构 ADR",
+      "forbidden": [
+        "learning-note"
+      ]
+    }
+  ]
+}

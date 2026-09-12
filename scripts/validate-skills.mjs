@@ -52,8 +52,7 @@ function readmeSkills(readmePath) {
   if (!existsSync(readmePath)) return null;
   const names = [];
   for (const line of readFileSync(readmePath, "utf8").split("\n")) {
-    const match = line.match(/^\|\s*`([a-z0-9][a-z0-9-]*)`\s*\|/);
-    if (match) names.push(match[1]);
+    for (const match of line.matchAll(/\|\s*`([a-z0-9][a-z0-9-]*)`\s*(?=\|)/g)) names.push(match[1]);
   }
   return names;
 }
@@ -62,6 +61,7 @@ export function validateSkills(skillsDirectory) {
   const root = resolve(skillsDirectory);
   const errors = [];
   const skills = [];
+  const triggerContracts = [];
   const addError = (code, path, message) => errors.push({ code, path: relative(root, path) || ".", message });
 
   if (!existsSync(root) || !statSync(root).isDirectory()) {
@@ -103,6 +103,32 @@ export function validateSkills(skillsDirectory) {
       skills.push({ directory: entry.name, name: name || null, skillRoot });
     }
 
+    const triggerPath = join(skillRoot, "evals", "triggers.json");
+    if (!existsSync(triggerPath)) {
+      addError("trigger_evals_missing", skillFile, "each skill must provide evals/triggers.json");
+    } else {
+      try {
+        const contract = JSON.parse(readFileSync(triggerPath, "utf8"));
+        const positive = Array.isArray(contract.positive) ? contract.positive : [];
+        const negative = Array.isArray(contract.negative) ? contract.negative : [];
+        if (positive.length < 3) addError("insufficient_positive_trigger_cases", triggerPath, "at least 3 positive trigger cases are required");
+        if (negative.length < 3) addError("insufficient_negative_trigger_cases", triggerPath, "at least 3 negative trigger cases are required");
+        for (const item of positive) {
+          if (!item || typeof item.request !== "string" || !item.request.trim() || typeof item.expected !== "string") {
+            addError("invalid_positive_trigger_case", triggerPath, "positive cases require non-empty request and expected strings");
+          }
+        }
+        for (const item of negative) {
+          if (!item || typeof item.request !== "string" || !item.request.trim() || !Array.isArray(item.forbidden) || item.forbidden.length === 0 || item.forbidden.some((name) => typeof name !== "string")) {
+            addError("invalid_negative_trigger_case", triggerPath, "negative cases require a non-empty request and forbidden skill names");
+          }
+        }
+        triggerContracts.push({ path: triggerPath, skillName: metadata?.name, positive, negative });
+      } catch {
+        addError("invalid_trigger_evals", triggerPath, "evals/triggers.json must contain valid JSON");
+      }
+    }
+
     for (const markdownFile of markdownFiles(skillRoot)) {
       const content = readFileSync(markdownFile, "utf8");
       for (const rawTarget of linkTargets(content)) {
@@ -128,6 +154,34 @@ export function validateSkills(skillsDirectory) {
       addError("duplicate_name", join(skill.skillRoot, "SKILL.md"), `skill name '${skill.name}' is also used by ${previous}`);
     } else {
       names.set(skill.name, skill.directory);
+    }
+  }
+
+  for (const contract of triggerContracts) {
+    const positiveRequests = new Map(
+      contract.positive
+        .filter((item) => typeof item?.request === "string" && typeof item?.expected === "string")
+        .map((item) => [item.request.trim().replace(/\s+/g, " "), item.expected]),
+    );
+    for (const item of contract.positive) {
+      if (typeof item?.expected === "string" && !names.has(item.expected)) {
+        addError("unknown_expected_skill", contract.path, `positive case references unknown skill '${item.expected}'`);
+      } else if (item?.expected && item.expected !== contract.skillName) {
+        addError("positive_trigger_targets_other_skill", contract.path, `positive case for '${contract.skillName}' targets '${item.expected}'`);
+      }
+    }
+    for (const item of contract.negative) {
+      const normalizedRequest = typeof item?.request === "string" ? item.request.trim().replace(/\s+/g, " ") : "";
+      const expected = positiveRequests.get(normalizedRequest);
+      if (expected && Array.isArray(item?.forbidden) && item.forbidden.includes(expected)) {
+        addError("contradictory_trigger_case", contract.path, `request is both expected and forbidden for '${expected}'`);
+      }
+      for (const forbidden of Array.isArray(item?.forbidden) ? item.forbidden : []) {
+        if (!names.has(forbidden)) addError("unknown_forbidden_skill", contract.path, `negative case references unknown skill '${forbidden}'`);
+      }
+      if (contract.skillName && Array.isArray(item?.forbidden) && !item.forbidden.includes(contract.skillName)) {
+        addError("negative_trigger_missing_own_skill", contract.path, `negative case must forbid '${contract.skillName}'`);
+      }
     }
   }
 

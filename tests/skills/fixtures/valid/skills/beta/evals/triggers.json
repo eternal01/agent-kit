@@ -1,0 +1,12 @@
+{
+  "positive": [
+    { "request": "do beta one", "expected": "beta" },
+    { "request": "do beta two", "expected": "beta" },
+    { "request": "do beta three", "expected": "beta" }
+  ],
+  "negative": [
+    { "request": "do alpha one", "forbidden": ["beta"] },
+    { "request": "do alpha two", "forbidden": ["beta"] },
+    { "request": "do alpha three", "forbidden": ["beta"] }
+  ]
+}

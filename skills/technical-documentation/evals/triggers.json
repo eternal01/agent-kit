@@ -1,0 +1,36 @@
+{
+  "positive": [
+    {
+      "request": "根据现有代码重写 API 文档",
+      "expected": "technical-documentation"
+    },
+    {
+      "request": "编写部署和回滚手册",
+      "expected": "technical-documentation"
+    },
+    {
+      "request": "评审 README 的事实、结构和文风",
+      "expected": "technical-documentation"
+    }
+  ],
+  "negative": [
+    {
+      "request": "替我决定系统架构",
+      "forbidden": [
+        "technical-documentation"
+      ]
+    },
+    {
+      "request": "把博客整理成个人学习笔记",
+      "forbidden": [
+        "technical-documentation"
+      ]
+    },
+    {
+      "request": "比较三个数据库并完成选型",
+      "forbidden": [
+        "technical-documentation"
+      ]
+    }
+  ]
+}

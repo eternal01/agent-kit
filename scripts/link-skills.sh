@@ -33,6 +33,24 @@ done
 
 mkdir -p -- "$target_dir"
 
+# 清理只可能由本仓库留下、且源码已经删除的旧链接。
+for target in "$target_dir"/*; do
+  [[ -L "$target" ]] || continue
+  link_target="$(readlink "$target")"
+  case "$link_target" in
+    "$source_dir"/*)
+      if [[ ! -f "$link_target/SKILL.md" ]]; then
+        if [[ "$dry_run" == true ]]; then
+          printf '计划删除失效链接：%s -> %s\n' "$target" "$link_target"
+        else
+          rm -- "$target"
+          printf '已删除失效链接：%s -> %s\n' "$target" "$link_target"
+        fi
+      fi
+      ;;
+  esac
+done
+
 # 先检查全部冲突，避免执行一半后才失败。
 conflicts=0
 for skill_dir in "$source_dir"/*; do

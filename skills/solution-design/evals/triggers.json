@@ -1,0 +1,36 @@
+{
+  "positive": [
+    {
+      "request": "把模糊需求整理成功能方案",
+      "expected": "solution-design"
+    },
+    {
+      "request": "设计用户找回密码的业务流程",
+      "expected": "solution-design"
+    },
+    {
+      "request": "比较两个产品交互方案并给出验收标准",
+      "expected": "solution-design"
+    }
+  ],
+  "negative": [
+    {
+      "request": "设计跨区域系统部署和数据所有权",
+      "forbidden": [
+        "solution-design"
+      ]
+    },
+    {
+      "request": "比较 Kafka 和 Pulsar",
+      "forbidden": [
+        "solution-design"
+      ]
+    },
+    {
+      "request": "把确认方案拆成编码任务",
+      "forbidden": [
+        "solution-design"
+      ]
+    }
+  ]
+}

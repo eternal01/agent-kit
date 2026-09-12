@@ -1,0 +1,36 @@
+{
+  "positive": [
+    {
+      "request": "根据确认的设计给出可执行实施计划",
+      "expected": "implementation-planning"
+    },
+    {
+      "request": "把迁移方案拆成有依赖和回滚的任务",
+      "expected": "implementation-planning"
+    },
+    {
+      "request": "为已确认需求编写分阶段编码计划",
+      "expected": "implementation-planning"
+    }
+  ],
+  "negative": [
+    {
+      "request": "需求还没定，请先比较功能方案",
+      "forbidden": [
+        "implementation-planning"
+      ]
+    },
+    {
+      "request": "直接按计划修改代码",
+      "forbidden": [
+        "implementation-planning"
+      ]
+    },
+    {
+      "request": "从零选择消息队列产品",
+      "forbidden": [
+        "implementation-planning"
+      ]
+    }
+  ]
+}

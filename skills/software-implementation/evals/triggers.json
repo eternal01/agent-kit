@@ -1,0 +1,36 @@
+{
+  "positive": [
+    {
+      "request": "按已确认计划实现这个功能",
+      "expected": "software-implementation"
+    },
+    {
+      "request": "修改代码完成已经明确的需求",
+      "expected": "software-implementation"
+    },
+    {
+      "request": "重构这个模块但保持公开行为",
+      "expected": "software-implementation"
+    }
+  ],
+  "negative": [
+    {
+      "request": "先帮我澄清模糊需求",
+      "forbidden": [
+        "software-implementation"
+      ]
+    },
+    {
+      "request": "只读审查当前 diff",
+      "forbidden": [
+        "software-implementation"
+      ]
+    },
+    {
+      "request": "定位尚未确认根因的性能异常",
+      "forbidden": [
+        "software-implementation"
+      ]
+    }
+  ]
+}

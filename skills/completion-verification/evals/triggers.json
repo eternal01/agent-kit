@@ -1,0 +1,36 @@
+{
+  "positive": [
+    {
+      "request": "在你说完成前核对所有证据",
+      "expected": "completion-verification"
+    },
+    {
+      "request": "确认这次修复是否真的通过验收",
+      "expected": "completion-verification"
+    },
+    {
+      "request": "检查文档任务是否可以声明完成",
+      "expected": "completion-verification"
+    }
+  ],
+  "negative": [
+    {
+      "request": "现在开始实现这个功能",
+      "forbidden": [
+        "completion-verification"
+      ]
+    },
+    {
+      "request": "只审查这个 PR 的代码质量",
+      "forbidden": [
+        "completion-verification"
+      ]
+    },
+    {
+      "request": "帮我定位测试超时的根因",
+      "forbidden": [
+        "completion-verification"
+      ]
+    }
+  ]
+}

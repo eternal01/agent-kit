@@ -1,0 +1,36 @@
+{
+  "positive": [
+    {
+      "request": "测试失败了，请定位根因并修复",
+      "expected": "systematic-debugging"
+    },
+    {
+      "request": "服务延迟异常，沿调用链调查",
+      "expected": "systematic-debugging"
+    },
+    {
+      "request": "这个行为不符合预期，请做最小复现",
+      "expected": "systematic-debugging"
+    }
+  ],
+  "negative": [
+    {
+      "request": "实现一个正常的新功能",
+      "forbidden": [
+        "systematic-debugging"
+      ]
+    },
+    {
+      "request": "预防性审查尚未出现问题的 diff",
+      "forbidden": [
+        "systematic-debugging"
+      ]
+    },
+    {
+      "request": "制定项目级性能规范",
+      "forbidden": [
+        "systematic-debugging"
+      ]
+    }
+  ]
+}

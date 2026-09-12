@@ -1,34 +1,45 @@
-# 技能目录
+# Skills
 
-技能按工作产物划分，避免同一任务被多个技能处理：
+本目录包含 16 个可独立安装的 Agent Skill。每个 Skill 只负责一种工作产物；不确定时，先根据下面的任务入口选择，不要把整条流程同时加载。
 
-| 技能 | 唯一职责 |
+## 按任务选择
+
+| 你要做什么 | 使用 |
 |---|---|
-| `grilling` | 在高风险或重大歧义下进行对抗性澄清与压力测试 |
-| `grill-with-docs` | 对抗性澄清并在确认后持久化术语、决策和 ADR |
-| `solution-design` | 澄清需求并形成业务/功能方案 |
-| `system-architecture` | 系统边界、质量属性与 C4 架构 |
-| `technology-selection` | 比较具体技术或供应商 |
-| `architecture-decision` | 记录和维护单项 ADR |
-| `implementation-planning` | 将确认的设计拆成实施计划 |
-| `software-implementation` | 按确认范围修改代码 |
-| `systematic-debugging` | 基于证据定位并修复根因 |
-| `code-review` | 只读审查 diff、提交或 PR |
-| `coding-standards` | 项目级规范及自动化门禁 |
-| `technical-documentation` | 基于已确认事实组织技术文档 |
-| `web-research` | 联网检索和核验时效信息 |
-| `skill-authoring` | 创建和治理 Agent Skill |
-| `completion-verification` | 在完成声明前核验证据 |
+| 挑战高风险方案、追问重大歧义，必要时记录确认结果 | `grilling` |
+| 把模糊需求整理成功能行为和验收标准 | `solution-design` |
+| 设计跨服务边界、数据流、部署和质量属性 | `system-architecture` |
+| 比较框架、数据库、云服务或供应商 | `technology-selection` |
+| 记录或评审已经讨论过的技术决策 | `architecture-decision` |
+| 把确认的需求或设计拆成实施任务 | `implementation-planning` |
+| 按确认范围编写、修改或重构代码 | `software-implementation` |
+| 调查测试失败、缺陷或性能异常的根因 | `systematic-debugging` |
+| 只读审查 diff、提交或 PR | `code-review` |
+| 做威胁建模、攻击面分析或安全专项审查 | `security-assessment` |
+| 制定项目编码约定和自动化门禁 | `coding-standards` |
+| 编写或评审 README、API、设计和运维文档 | `technical-documentation` |
+| 把资料或学习目标整理成个人阅读笔记 | `learning-note` |
+| 联网核验版本、价格、兼容性、漏洞或官方行为 | `web-research` |
+| 创建、拆分或评审 Agent Skill | `skill-authoring` |
+| 在声明完成前核对测试、构建、文档和验收证据 | `completion-verification` |
 
-每个 `SKILL.md` 只保留触发边界和核心流程；模板、清单和方法细节位于各自的 `references/`，仅在需要时读取。所有引用均相对技能目录。
+## 容易混淆的边界
 
-## 质量门禁
+- 单模块功能和用户场景归 `solution-design`；跨服务、部署单元、数据所有权或 SLO 归 `system-architecture`。
+- 普通 diff 审查归 `code-review`；威胁模型和安全专项归 `security-assessment`。
+- 项目文档归 `technical-documentation`；个人学习文章和复习材料归 `learning-note`。
+- `web-research` 负责找证据，其他 Skill 负责把证据用于选型、文档或学习材料。
+- `grilling` 只在高风险、重大歧义或用户明确要求时启用；用户要求留档时才写入术语、决定或 ADR。
 
-本项目保留各 Agent 的原生 Skill 发现机制，不维护额外的运行时注册表。提交前执行确定性静态验证：
+## 文件结构
+
+`SKILL.md` 保存触发边界和核心流程。详细方法放在同目录的 `references/`，确定性操作放在 `scripts/`，固定材料放在 `assets/`。`evals/triggers.json` 至少保存 3 个正例和 3 个反例，用于评审发现边界。
+
+本项目沿用各 Agent 的原生 Skill 发现机制，不维护运行时注册表。提交前执行：
 
 ```bash
-node ./scripts/validate-skills.mjs
+./scripts/validate-skills.mjs
 node --test ./tests/skills/validate-skills.test.mjs
 ```
 
-验证内容包括 frontmatter、目录/名称一致性、名称唯一性、description 的适用与排除边界、相对链接，以及本目录表格与实际 Skill 的双向一致性。
+验证器检查 frontmatter、目录和名称、触发契约、相对链接，以及本目录与实际 Skill 的对应关系。它不调用模型，因此不能证明真实 Agent 一定会按预期触发。

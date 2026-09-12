@@ -41,3 +41,11 @@ test("detects README omissions and unknown entries", () => {
   assert.ok(result.includes("readme_missing_skill"));
   assert.ok(result.includes("readme_unknown_skill"));
 });
+
+test("detects incomplete trigger contracts and unknown skill references", () => {
+  const result = codes("evals");
+  assert.ok(result.includes("insufficient_positive_trigger_cases"));
+  assert.ok(result.includes("insufficient_negative_trigger_cases"));
+  assert.ok(result.includes("unknown_expected_skill"));
+  assert.ok(result.includes("contradictory_trigger_case"));
+});

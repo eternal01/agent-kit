@@ -1,0 +1,36 @@
+{
+  "positive": [
+    {
+      "request": "比较 Kafka、Pulsar 和 NATS 并做选型",
+      "expected": "technology-selection"
+    },
+    {
+      "request": "根据约束选择云数据库供应商",
+      "expected": "technology-selection"
+    },
+    {
+      "request": "评估框架候选并说明退出成本",
+      "expected": "technology-selection"
+    }
+  ],
+  "negative": [
+    {
+      "request": "设计整个系统的服务边界",
+      "forbidden": [
+        "technology-selection"
+      ]
+    },
+    {
+      "request": "直接实现已经选定的数据库适配",
+      "forbidden": [
+        "technology-selection"
+      ]
+    },
+    {
+      "request": "记录刚才已经达成的技术决策",
+      "forbidden": [
+        "technology-selection"
+      ]
+    }
+  ]
+}
