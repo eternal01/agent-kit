@@ -36,10 +36,20 @@
 
 需要稳定快照或目标环境不支持软链接时，仍可使用 `./scripts/build-skills.sh` 复制安装。两个脚本都支持通过 `AGENT_SKILLS_DIR` 覆盖目标；执行前应先审查，Agent 通常需要重启才能重新发现技能。
 
+本项目不增加运行时 Skill 注册表，沿用各 Agent 的原生发现机制。Skill 静态质量门禁可通过 `node ./scripts/validate-skills.mjs` 执行。
+
 Pi 专属 extensions 保存在 `adapters/pi/extensions/`，使用同样的安装方式：
 
 ```bash
 ./scripts/link-pi-extensions.sh
 ```
 
-源码虽然归入专属 adapter，运行时仍安装到 Pi 原生路径 `~/.pi/agent/extensions/`；可通过 `PI_EXTENSIONS_DIR` 覆盖目标。详见[Pi 适配说明](adapters/pi/README.md)和[脚本说明](scripts/README.md)。
+源码虽然归入专属 adapter，运行时仍安装到 Pi 原生路径 `~/.pi/agent/extensions/`；可通过 `PI_EXTENSIONS_DIR` 覆盖目标。替换已有副本前会创建可恢复备份，卸载和验证命令如下：
+
+```bash
+./scripts/uninstall-pi-extensions.sh --restore-latest
+./scripts/verify-pi-extensions.sh
+./scripts/verify-pi-extensions.sh --live
+```
+
+详见[Pi 适配说明](adapters/pi/README.md)和[脚本说明](scripts/README.md)。

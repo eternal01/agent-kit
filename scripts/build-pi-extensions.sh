@@ -5,6 +5,9 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source_dir="$repo_root/adapters/pi/extensions"
 target_dir="${PI_EXTENSIONS_DIR:-$HOME/.pi/agent/extensions}"
+# shellcheck source=./pi-extension-common.sh
+source "$repo_root/scripts/pi-extension-common.sh"
+pi_extension_init_backup
 
 mkdir -p -- "$target_dir"
 
@@ -32,8 +35,15 @@ for extension_dir in "$source_dir"/*; do
   extension_name="$(basename "$extension_dir")"
   target="$target_dir/$extension_name"
 
-  rm -rf -- "$target"
-  cp -R -- "$extension_dir" "$target"
+  if [[ -L "$target" ]]; then
+    rm -- "$target"
+  elif [[ -e "$target" ]]; then
+    pi_extension_backup "$target" "$extension_name"
+  fi
+
+  mkdir -p -- "$target"
+  tar -C "$extension_dir" --exclude='./node_modules' --exclude='./.git' -cf - . | tar -C "$target" -xf -
+  printf '%s\n' "$extension_dir" > "$target/.agent-kit-managed"
   printf '已安装：%s\n' "$target"
 done
 

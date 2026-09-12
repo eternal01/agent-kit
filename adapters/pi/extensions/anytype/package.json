@@ -1,0 +1,23 @@
+{
+  "name": "@agent-kit/pi-anytype",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "smoke": "node --experimental-strip-types tests/smoke.ts",
+    "verify": "npm test && npm run typecheck && npm run smoke"
+  },
+  "pi": {
+    "extensions": ["./index.ts"]
+  },
+  "dependencies": {
+    "typebox": "^1.3.3"
+  },
+  "devDependencies": {
+    "@earendil-works/pi-coding-agent": "0.84.4",
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.3"
+  }
+}

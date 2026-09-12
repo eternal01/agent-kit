@@ -21,3 +21,14 @@
 | `completion-verification` | 在完成声明前核验证据 |
 
 每个 `SKILL.md` 只保留触发边界和核心流程；模板、清单和方法细节位于各自的 `references/`，仅在需要时读取。所有引用均相对技能目录。
+
+## 质量门禁
+
+本项目保留各 Agent 的原生 Skill 发现机制，不维护额外的运行时注册表。提交前执行确定性静态验证：
+
+```bash
+node ./scripts/validate-skills.mjs
+node --test ./tests/skills/validate-skills.test.mjs
+```
+
+验证内容包括 frontmatter、目录/名称一致性、名称唯一性、description 的适用与排除边界、相对链接，以及本目录表格与实际 Skill 的双向一致性。

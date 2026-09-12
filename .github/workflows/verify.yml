@@ -1,0 +1,25 @@
+name: Verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  pi-extensions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: adapters/pi/extensions/github-research/package-lock.json
+      - name: Install extension dependencies without lifecycle scripts
+        working-directory: adapters/pi/extensions/github-research
+        run: npm ci --ignore-scripts
+      - name: Verify Pi extensions
+        run: ./scripts/verify-pi-extensions.sh

@@ -170,7 +170,11 @@ function errorMessage(status: number, body: unknown): string {
 }
 
 export class AnytypeClient {
-	constructor(private readonly config: AnytypeClientConfig = loadConfig()) {}
+	private readonly config: AnytypeClientConfig;
+
+	constructor(config: AnytypeClientConfig = loadConfig()) {
+		this.config = config;
+	}
 
 	get defaultSpaceId(): string | undefined {
 		return this.config.defaultSpaceId;

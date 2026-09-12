@@ -5,6 +5,9 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 source_dir="$repo_root/adapters/pi/extensions"
 target_dir="${PI_EXTENSIONS_DIR:-$HOME/.pi/agent/extensions}"
+# shellcheck source=./pi-extension-common.sh
+source "$repo_root/scripts/pi-extension-common.sh"
+pi_extension_init_backup
 replace_copies=false
 dry_run=false
 
@@ -17,7 +20,8 @@ usage() {
   --dry-run         只显示将执行的操作
   -h, --help        显示帮助
 
-可通过 PI_EXTENSIONS_DIR 覆盖默认目标 ~/.pi/agent/extensions/。
+可通过 PI_EXTENSIONS_DIR 覆盖默认目标 ~/.pi/agent/extensions/，
+通过 PI_EXTENSIONS_BACKUP_DIR 覆盖备份目录。
 EOF
 }
 
@@ -67,12 +71,12 @@ for extension_dir in "$source_dir"/*; do
   fi
 
   if [[ "$dry_run" == true ]]; then
-    [[ -e "$target" ]] && action='替换副本' || action='创建链接'
+    [[ -e "$target" ]] && action='备份并替换副本' || action='创建链接'
     printf '计划%s：%s -> %s\n' "$action" "$target" "$extension_dir"
     continue
   fi
 
-  [[ -e "$target" ]] && rm -rf -- "$target"
+  [[ -e "$target" ]] && pi_extension_backup "$target" "$(basename "$target")"
   ln -s -- "$extension_dir" "$target"
   printf '已链接：%s -> %s\n' "$target" "$extension_dir"
 done

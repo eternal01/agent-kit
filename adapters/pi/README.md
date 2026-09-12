@@ -49,10 +49,32 @@ export ANYTYPE_DEFAULT_SPACE_ID='可选的默认 Space ID'
 测试单个扩展：
 
 ```bash
+cd adapters/pi/extensions/anytype && npm run verify
 pi -e ./adapters/pi/extensions/anytype/index.ts
 ```
 
+Anytype 扩展的配置校验会拒绝未显式允许的远程 HTTP 地址；远程服务必须使用 HTTPS 并设置 `ANYTYPE_ALLOW_REMOTE=1`。
+
 修改链接安装的扩展后，在 Pi 中运行 `/reload` 即可重新加载。
+
+## GitHub Research
+
+`github-research/` 注册只读的 `github_research` 工具，支持跨仓库 Repository、Code、Issue 和 PR 检索、批量查询、分页去重、候选仓库证据采集与可解释成熟度评分。GitHub 内容始终按不可信外部证据处理。
+
+运行环境诊断：
+
+```text
+/github-research-doctor
+```
+
+该命令只检查 `gh` 版本、github.com 认证状态和 Core/Search API 剩余额度，不输出 Token。扩展详情和评分方法见 [`github-research/README.md`](extensions/github-research/README.md)。
+
+统一验证：
+
+```bash
+./scripts/verify-pi-extensions.sh
+./scripts/verify-pi-extensions.sh --live
+```
 
 ## 知识库组织
 
