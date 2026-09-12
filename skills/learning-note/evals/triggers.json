@@ -11,6 +11,34 @@
     {
       "request": "检索我的知识库并整理一份 OAuth 复习材料",
       "expected": "learning-note"
+    },
+    {
+      "request": "把 Go Channel 从使用方式、hchan 和 sudog、发送接收流程、内存模型、版本变化一直讲到为什么采用这种设计，整理成详细知识点",
+      "expected": "learning-note"
+    },
+    {
+      "request": "将这份资料压缩成可以快速复习的知识点速查",
+      "expected": "learning-note"
+    },
+    {
+      "request": "把一个技术主题拆成速查笔记、详细知识点和实验练习，并保存到知识库",
+      "expected": "learning-note"
+    },
+    {
+      "request": "详细讲清 Go Slice 的日常使用、底层数组、扩容调用链、历代增长策略，以及为什么选择连续动态数组而不是链表",
+      "expected": "learning-note"
+    },
+    {
+      "request": "为 Redis 渐进式 rehash 建立从命令行为、内部字典实现、版本演进到替代方案取舍的完整知识体系",
+      "expected": "learning-note"
+    },
+    {
+      "request": "我不想只知道 append 怎么用，希望理解 Slice 的内存结构、扩容源码、历史变化，以及为什么不用链表",
+      "expected": "learning-note"
+    },
+    {
+      "request": "把 OAuth 的授权流程、Token 语义、规范边界和安全风险整理成一篇可复习材料",
+      "expected": "learning-note"
     }
   ],
   "negative": [
@@ -28,6 +56,36 @@
     },
     {
       "request": "创建一份系统架构 ADR",
+      "forbidden": [
+        "learning-note"
+      ]
+    },
+    {
+      "request": "为订单系统选择 PostgreSQL 还是 MySQL 并给出正式技术决策",
+      "forbidden": [
+        "learning-note"
+      ]
+    },
+    {
+      "request": "审查这次 Go PR 是否存在并发缺陷",
+      "forbidden": [
+        "learning-note"
+      ]
+    },
+    {
+      "request": "直接实现一个 Go Worker Pool",
+      "forbidden": [
+        "learning-note"
+      ]
+    },
+    {
+      "request": "为服务团队编写当前订单 API 的接口使用和部署说明",
+      "forbidden": [
+        "learning-note"
+      ]
+    },
+    {
+      "request": "只检查 Go 1.24 到 Go 1.25 的 Slice 扩容行为是否发生变化",
       "forbidden": [
         "learning-note"
       ]

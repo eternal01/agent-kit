@@ -1,0 +1,45 @@
+{
+  "cases": [
+    {
+      "id": "go-slice",
+      "request": "详细讲清 Go Slice 的日常使用、底层数组、扩容调用链、历代增长策略，以及为什么选择连续动态数组而不是链表",
+      "kind": "deep-dive",
+      "required_sections": [
+        "使用与稳定契约",
+        "底层表示",
+        "关键操作与算法",
+        "复杂度与资源",
+        "版本演进",
+        "设计动机",
+        "应用取舍",
+        "验证实验"
+      ],
+      "required_distinctions": ["Slice 描述符与底层数组", "实现者取舍与使用者取舍"],
+      "must_not": ["只给 API 摘要", "把 Slice 直接等同于数组", "把当前扩容策略写成语言规范保证"]
+    },
+    {
+      "id": "oauth",
+      "request": "把 OAuth 2.0 整理成可复习的知识点，说明授权流程、Token 语义、风险和适用边界",
+      "kind": "deep-dive",
+      "required_sections": ["使用与稳定契约", "关键操作与算法", "原理与设计约束", "应用取舍", "验证实验"],
+      "required_distinctions": ["标准规范与具体实现", "认证与授权"],
+      "must_not": ["虚构协议设计动机", "把 OAuth 等同于身份认证"]
+    },
+    {
+      "id": "raft",
+      "request": "系统讲清 Raft 的领导选举、日志复制、提交规则、故障恢复和适用边界",
+      "kind": "deep-dive",
+      "required_sections": ["使用与稳定契约", "底层表示", "关键操作与算法", "边界、复杂度与资源", "原理与设计约束", "应用取舍"],
+      "required_distinctions": ["算法保证与业务一致性", "网络分区与节点故障"],
+      "must_not": ["只描述角色名称", "声称 Raft 自动解决跨系统事务"]
+    },
+    {
+      "id": "quick-note",
+      "request": "把这份资料压缩成 300 字以内的快速知识点速查",
+      "kind": "quick-note",
+      "required_sections": ["一句话结论", "关键事实", "易错边界", "来源"],
+      "required_distinctions": [],
+      "must_not": ["展开完整源码调用链", "扩写成详细知识点", "虚构版本演进"]
+    }
+  ]
+}

@@ -103,6 +103,29 @@ export function validateSkills(skillsDirectory) {
       skills.push({ directory: entry.name, name: name || null, skillRoot });
     }
 
+    const contentCasesPath = join(skillRoot, "evals", "content-cases.json");
+    if (existsSync(contentCasesPath)) {
+      try {
+        const contentCases = JSON.parse(readFileSync(contentCasesPath, "utf8"));
+        if (!Array.isArray(contentCases.cases) || contentCases.cases.length < 1) {
+          addError("invalid_content_cases", contentCasesPath, "content-cases.json requires a non-empty cases array");
+        } else {
+          for (const item of contentCases.cases) {
+            if (!item || typeof item.id !== "string" || !item.id.trim() || typeof item.request !== "string" || !item.request.trim() || !["quick-note", "deep-dive", "learning-guide", "source-note", "comparison", "reflection"].includes(item.kind)) {
+              addError("invalid_content_case", contentCasesPath, "content cases require id, request and a supported kind");
+            }
+            for (const field of ["required_sections", "required_distinctions", "must_not"]) {
+              if (!Array.isArray(item?.[field]) || item[field].some((value) => typeof value !== "string")) {
+                addError("invalid_content_case", contentCasesPath, `content case '${item?.id || "?"}' requires string array '${field}'`);
+              }
+            }
+          }
+        }
+      } catch {
+        addError("invalid_content_cases", contentCasesPath, "content-cases.json must contain valid JSON");
+      }
+    }
+
     const triggerPath = join(skillRoot, "evals", "triggers.json");
     if (!existsSync(triggerPath)) {
       addError("trigger_evals_missing", skillFile, "each skill must provide evals/triggers.json");
