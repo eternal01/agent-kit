@@ -6,15 +6,21 @@
 
 | 命令 | 作用 | 是否写入 |
 |---|---|---|
-| `./scripts/link-skills.sh` | 将 Skill 链接到 Agent Skills 目录 | 是 |
+| `./scripts/link-skills.sh` | 将全部 Skill 链接到 Agent Skills 目录 | 是 |
+| `./scripts/link-skills.sh --profile core-development` | 链接一个 Skill profile | 是 |
+| `./scripts/link-skills.sh --skill code-review --prune` | 链接指定 Skill 并移除本仓库其他链接 | 是 |
+| `./scripts/link-skills.sh --list` | 列出可用 Skill 和 profile | 否 |
 | `./scripts/link-skills.sh --dry-run` | 预览链接和冲突 | 否 |
-| `./scripts/build-skills.sh` | 复制独立 Skill 快照 | 是 |
+| `./scripts/build-skills.sh` | 复制全部独立 Skill 快照 | 是 |
+| `./scripts/build-skills.sh --profile knowledge` | 复制一个 Skill profile 快照 | 是 |
 | `./scripts/validate-skills.mjs` | 检查结构、引用、目录和触发契约 | 否 |
+| `./scripts/validate-minimal-change-benchmarks.mjs` | 检查最小充分变更基准场景结构 | 否 |
 | `node --test ./tests/skills/validate-skills.test.mjs` | 运行验证器测试 | 否 |
+| `./tests/scripts/skill-install.test.sh` | 运行 Skill 安装生命周期测试 | 否 |
 
-默认目标是 `~/.agents/skills/`，可用 `AGENT_SKILLS_DIR` 覆盖。链接脚本默认不替换普通目录；迁移旧副本时显式使用 `--replace-copies`。脚本会删除指向本仓库、但源码已经移除的失效链接，不处理其他来源。
+默认目标是 `~/.agents/skills/`，可用 `AGENT_SKILLS_DIR` 覆盖。`--skill` 和 `--profile` 可重复组合；未选择时安装全部。可用 profile 为 `core-development`、`architecture`、`governance` 和 `knowledge`。`--prune` 只删除指向本仓库的链接，或带 `.agent-kit-managed` 标记的快照。链接脚本默认不替换普通目录；迁移旧副本时显式使用 `--replace-copies`。
 
-验证器不调用模型。`evals/triggers.json` 是可审查的发现契约，不是实际模型准确率报告。
+验证器不调用模型。`evals/triggers.json` 与 `evals/conflicts.json` 是可审查的发现契约，不是实际模型准确率报告。
 
 ## 文档
 

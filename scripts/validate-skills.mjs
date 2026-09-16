@@ -69,7 +69,7 @@ export function validateSkills(skillsDirectory) {
   }
 
   for (const entry of readdirSync(root, { withFileTypes: true })) {
-    if (!entry.isDirectory()) continue;
+    if (!entry.isDirectory() || entry.name === "evals") continue;
     const skillRoot = join(root, entry.name);
     const skillFile = join(skillRoot, "SKILL.md");
     if (!existsSync(skillFile)) {
@@ -79,6 +79,22 @@ export function validateSkills(skillsDirectory) {
 
     const content = readFileSync(skillFile, "utf8");
     const metadata = parseFrontmatter(content);
+    if (/(?:自动|强制).{0,40}(?:使用|加载|调用|触发).{0,40}`[a-z0-9][a-z0-9-]*`/i.test(content)) {
+      addError("forced_skill_chain", skillFile, "SKILL.md must not force another skill to load automatically");
+    }
+    const directReferences = new Set(
+      linkTargets(content)
+        .filter((target) => !isIgnoredLink(target))
+        .map((target) => resolve(skillRoot, target.split("#", 1)[0])),
+    );
+    const referencesRoot = join(skillRoot, "references");
+    if (existsSync(referencesRoot)) {
+      for (const referenceFile of markdownFiles(referencesRoot)) {
+        if (!directReferences.has(referenceFile)) {
+          addError("orphan_reference", referenceFile, "reference files must be linked directly from SKILL.md");
+        }
+      }
+    }
     if (!metadata) {
       addError("invalid_frontmatter", skillFile, "SKILL.md must start with a closed YAML frontmatter block");
       skills.push({ directory: entry.name, name: null, skillRoot });
@@ -205,6 +221,35 @@ export function validateSkills(skillsDirectory) {
       if (contract.skillName && Array.isArray(item?.forbidden) && !item.forbidden.includes(contract.skillName)) {
         addError("negative_trigger_missing_own_skill", contract.path, `negative case must forbid '${contract.skillName}'`);
       }
+    }
+  }
+
+  const conflictMatrixPath = join(root, "evals", "conflicts.json");
+  if (existsSync(conflictMatrixPath)) {
+    try {
+      const matrix = JSON.parse(readFileSync(conflictMatrixPath, "utf8"));
+      if (!Array.isArray(matrix.cases) || matrix.cases.length === 0) {
+        addError("invalid_conflict_matrix", conflictMatrixPath, "conflicts.json requires a non-empty cases array");
+      } else {
+        const requests = new Map();
+        for (const item of matrix.cases) {
+          if (!item || typeof item.request !== "string" || !item.request.trim() || typeof item.expected !== "string" || !item.expected.trim() || !Array.isArray(item.forbidden) || item.forbidden.length === 0 || item.forbidden.some((name) => typeof name !== "string" || !name.trim())) {
+            addError("invalid_conflict_case", conflictMatrixPath, "conflict cases require request, expected and non-empty forbidden skill names");
+            continue;
+          }
+          if (!names.has(item.expected)) addError("unknown_conflict_expected_skill", conflictMatrixPath, `conflict case references unknown expected skill '${item.expected}'`);
+          if (item.forbidden.includes(item.expected)) addError("contradictory_conflict_case", conflictMatrixPath, `conflict case both expects and forbids '${item.expected}'`);
+          for (const forbidden of item.forbidden) {
+            if (!names.has(forbidden)) addError("unknown_conflict_forbidden_skill", conflictMatrixPath, `conflict case references unknown forbidden skill '${forbidden}'`);
+          }
+          const normalizedRequest = item.request.trim().replace(/\s+/g, " ");
+          const previous = requests.get(normalizedRequest);
+          if (previous && previous !== item.expected) addError("ambiguous_conflict_case", conflictMatrixPath, `request has competing expected skills '${previous}' and '${item.expected}'`);
+          else requests.set(normalizedRequest, item.expected);
+        }
+      }
+    } catch {
+      addError("invalid_conflict_matrix", conflictMatrixPath, "conflicts.json must contain valid JSON");
     }
   }
 

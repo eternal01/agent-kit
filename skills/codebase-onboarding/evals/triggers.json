@@ -1,0 +1,30 @@
+{
+  "positive": [
+    {
+      "request": "刚接手这个仓库，帮我梳理模块、入口和运行方式",
+      "expected": "codebase-onboarding"
+    },
+    {
+      "request": "给我一份理解现有代码库的阅读路径和关键调用链",
+      "expected": "codebase-onboarding"
+    },
+    {
+      "request": "介绍这个项目的目录职责、构建测试入口和主要依赖",
+      "expected": "codebase-onboarding"
+    }
+  ],
+  "negative": [
+    {
+      "request": "为这个系统重新设计跨服务架构",
+      "forbidden": ["codebase-onboarding"]
+    },
+    {
+      "request": "定位测试超时的根因并修复",
+      "forbidden": ["codebase-onboarding"]
+    },
+    {
+      "request": "根据确认需求修改登录页面",
+      "forbidden": ["codebase-onboarding"]
+    }
+  ]
+}

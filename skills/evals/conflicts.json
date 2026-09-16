@@ -1,0 +1,54 @@
+{
+  "cases": [
+    {
+      "request": "把模糊需求整理成功能方案并给出验收标准",
+      "expected": "solution-design",
+      "forbidden": ["system-architecture", "implementation-planning"]
+    },
+    {
+      "request": "设计跨服务边界、数据所有权和故障隔离",
+      "expected": "system-architecture",
+      "forbidden": ["solution-design", "technology-selection"]
+    },
+    {
+      "request": "比较 PostgreSQL 和 MySQL 并完成选型",
+      "expected": "technology-selection",
+      "forbidden": ["system-architecture", "architecture-decision"]
+    },
+    {
+      "request": "把已确认的消息队列决策记录为 ADR",
+      "expected": "architecture-decision",
+      "forbidden": ["technology-selection", "implementation-planning"]
+    },
+    {
+      "request": "根据确认设计拆分实施任务、验证和回滚点",
+      "expected": "implementation-planning",
+      "forbidden": ["solution-design", "software-implementation"]
+    },
+    {
+      "request": "以最小修改复用现有能力实现已确认需求",
+      "expected": "software-implementation",
+      "forbidden": ["solution-design", "code-review"]
+    },
+    {
+      "request": "定位构建失败的根因",
+      "expected": "systematic-debugging",
+      "forbidden": ["code-review", "software-implementation"]
+    },
+    {
+      "request": "评审这个 PR 是否存在阻塞问题",
+      "expected": "code-review",
+      "forbidden": ["security-assessment", "software-implementation"]
+    },
+    {
+      "request": "梳理陌生仓库的入口、模块和推荐阅读路径",
+      "expected": "codebase-onboarding",
+      "forbidden": ["system-architecture", "systematic-debugging"]
+    },
+    {
+      "request": "对生产数据迁移方案进行对抗性压力测试",
+      "expected": "grilling",
+      "forbidden": ["solution-design", "implementation-planning"]
+    }
+  ]
+}

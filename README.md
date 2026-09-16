@@ -5,16 +5,23 @@
 ## 从任务开始
 
 - 不确定该用哪个 Skill：查看[任务索引](skills/README.md)。
-- 安装或更新 Skill：运行 `./scripts/link-skills.sh`。
+- 安装或更新 Skill：运行 `./scripts/link-skills.sh`；可用 `--skill` 或 `--profile` 选择性安装。
 - 使用 Pi 扩展：查看[Pi 扩展](adapters/pi/README.md)。
 - 修改 Skill 或扩展：先运行对应验证，再运行仓库级检查。
 
 ## 安装 Skills
 
-开发环境建议使用软链接，使仓库修改立即生效：
+开发环境建议使用软链接，使仓库修改立即生效。默认链接全部 Skill；推荐按当前任务选择：
 
 ```bash
-./scripts/link-skills.sh
+./scripts/link-skills.sh --profile core-development
+./scripts/link-skills.sh --skill codebase-onboarding
+```
+
+查看可用项：
+
+```bash
+./scripts/link-skills.sh --list
 ```
 
 首次替换旧的复制安装：
@@ -43,8 +50,10 @@
 
 ```bash
 ./scripts/validate-skills.mjs
+./scripts/validate-minimal-change-benchmarks.mjs
 ./scripts/check-docs.mjs
-node --test ./tests/skills/validate-skills.test.mjs ./tests/scripts/check-docs.test.mjs
+node --test ./tests/skills/validate-skills.test.mjs ./tests/scripts/check-docs.test.mjs ./tests/benchmarks/validate-minimal-change-benchmarks.test.mjs
+./tests/scripts/skill-install.test.sh
 ./scripts/verify-pi-extensions.sh
 ```
 
@@ -54,12 +63,12 @@ node --test ./tests/skills/validate-skills.test.mjs ./tests/scripts/check-docs.t
 ./scripts/verify-pi-extensions.sh --live
 ```
 
-Skill 验证器检查结构和触发契约，不调用模型。它不能代替真实 Agent 中的行为回放。
+Skill 验证器检查结构、触发契约和跨 Skill 冲突矩阵，不调用模型。它不能代替真实 Agent 中的行为回放。
 
 ## 目录
 
 - `skills/`：自包含的工作流和按需资料。
-- `rules/`：本仓库特有的稳定约定。
+- `rules/`：本仓库特有的稳定约定，包括完成声明的证据规则。
 - `adapters/pi/`：依赖 Pi SDK 或运行时的扩展。
 - `scripts/`：安装、卸载和验证脚本。
 - `tests/`：脚本、Skill 和扩展的测试。

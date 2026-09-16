@@ -11,6 +11,10 @@
     {
       "request": "重构这个模块但保持公开行为",
       "expected": "software-implementation"
+    },
+    {
+      "request": "复用现有能力，以最小修改实现已确认需求",
+      "expected": "software-implementation"
     }
   ],
   "negative": [

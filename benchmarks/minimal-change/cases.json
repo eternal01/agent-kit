@@ -1,0 +1,76 @@
+{
+  "cases": [
+    {
+      "id": "native-date-input",
+      "request": "在现有表单中收集日期，保持键盘可用和错误提示。",
+      "expected_strategies": ["使用现有表单组件或原生 date input"],
+      "forbidden_changes": ["仅为日期输入新增第三方日期选择器"],
+      "protected_invariants": ["键盘访问", "错误提示", "已有表单校验"],
+      "verification": ["运行现有表单相关测试"],
+      "complexity_metrics": ["files", "dependencies", "public_api", "net_loc"]
+    },
+    {
+      "id": "stdlib-csv-summary",
+      "request": "读取一份小型 CSV 并汇总指定列。",
+      "expected_strategies": ["使用语言标准库的 CSV 能力"],
+      "forbidden_changes": ["只为该汇总新增数据处理依赖"],
+      "protected_invariants": ["格式错误处理", "资源释放"],
+      "verification": ["为正常和格式错误输入运行测试"],
+      "complexity_metrics": ["dependencies", "public_api", "net_loc"]
+    },
+    {
+      "id": "reuse-existing-helper",
+      "request": "为新入口生成与现有入口一致的分页参数。",
+      "expected_strategies": ["复用仓库已有分页 helper"],
+      "forbidden_changes": ["重复实现相同分页解析"],
+      "protected_invariants": ["默认值", "边界校验", "错误响应"],
+      "verification": ["运行分页 helper 和入口测试"],
+      "complexity_metrics": ["files", "public_api", "net_loc"]
+    },
+    {
+      "id": "configuration-before-strategy",
+      "request": "为已有重试逻辑调整默认重试次数。",
+      "expected_strategies": ["调整已有配置或常量"],
+      "forbidden_changes": ["为固定重试次数引入策略框架"],
+      "protected_invariants": ["退避行为", "失败日志", "配置兼容性"],
+      "verification": ["运行重试行为测试"],
+      "complexity_metrics": ["files", "public_api", "net_loc"]
+    },
+    {
+      "id": "trust-boundary-validation",
+      "request": "简化邮件地址提交路径，同时拒绝无效输入。",
+      "expected_strategies": ["复用现有校验或平台校验"],
+      "forbidden_changes": ["删除输入校验以减少代码"],
+      "protected_invariants": ["无效输入被拒绝", "错误信息不泄露敏感数据"],
+      "verification": ["运行有效与无效输入测试"],
+      "complexity_metrics": ["files", "net_loc"]
+    },
+    {
+      "id": "accessible-action",
+      "request": "新增一个触发保存操作的简单控件。",
+      "expected_strategies": ["使用现有按钮组件或原生 button"],
+      "forbidden_changes": ["用无语义元素替代可访问按钮"],
+      "protected_invariants": ["键盘操作", "可访问名称", "禁用状态"],
+      "verification": ["运行组件和可访问性测试"],
+      "complexity_metrics": ["dependencies", "public_api", "net_loc"]
+    },
+    {
+      "id": "local-bug-fix",
+      "request": "修复空结果导致的渲染异常。",
+      "expected_strategies": ["在异常来源做局部修复并添加回归测试"],
+      "forbidden_changes": ["借修复进行无关模块重构"],
+      "protected_invariants": ["正常结果行为", "空状态展示", "错误边界"],
+      "verification": ["先复现失败，再运行回归测试"],
+      "complexity_metrics": ["files", "public_api", "net_loc"]
+    },
+    {
+      "id": "single-caller-no-abstraction",
+      "request": "为唯一调用方增加一个固定格式转换。",
+      "expected_strategies": ["在现有边界内直接实现"],
+      "forbidden_changes": ["为单一调用方创建通用框架或公开扩展点"],
+      "protected_invariants": ["格式契约", "错误处理", "现有调用方兼容性"],
+      "verification": ["运行调用方测试"],
+      "complexity_metrics": ["files", "public_api", "net_loc"]
+    }
+  ]
+}
