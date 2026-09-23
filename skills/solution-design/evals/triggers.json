@@ -11,6 +11,14 @@
     {
       "request": "比较两个产品交互方案并给出验收标准",
       "expected": "solution-design"
+    },
+    {
+      "request": "这个功能能否沿用现有能力完成？先比较最省改动与长期方案，不要写代码",
+      "expected": "solution-design"
+    },
+    {
+      "request": "需求还不清楚，先看看能否不加依赖解决，并梳理验收标准",
+      "expected": "solution-design"
     }
   ],
   "negative": [
@@ -28,6 +36,12 @@
     },
     {
       "request": "把确认方案拆成编码任务",
+      "forbidden": [
+        "solution-design"
+      ]
+    },
+    {
+      "request": "目标和约束都确认了，请比较现有代码的几种实施路径并给出任务计划",
       "forbidden": [
         "solution-design"
       ]

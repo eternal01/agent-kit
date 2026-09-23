@@ -11,6 +11,10 @@
     {
       "request": "规划跨区域部署、故障隔离和数据所有权",
       "expected": "system-architecture"
+    },
+    {
+      "request": "现有服务能否不拆分就满足隔离目标？比较保留边界和重构架构的代价",
+      "expected": "system-architecture"
     }
   ],
   "negative": [

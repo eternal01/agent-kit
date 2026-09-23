@@ -7,11 +7,11 @@
 | 你要做什么 | 使用 |
 |---|---|
 | 挑战高风险方案、追问重大歧义，必要时记录确认结果 | `grilling` |
-| 把模糊需求整理成功能行为和验收标准 | `solution-design` |
-| 设计跨服务边界、数据流、部署和质量属性 | `system-architecture` |
+| 澄清功能需求，或比较功能的低改动与长期实现方案 | `solution-design` |
+| 设计跨服务边界、数据流、部署和质量属性，并比较架构演进路径 | `system-architecture` |
 | 比较框架、数据库、云服务或供应商 | `technology-selection` |
 | 记录或评审已经讨论过的技术决策 | `architecture-decision` |
-| 把确认的需求或设计拆成实施任务 | `implementation-planning` |
+| 对已确认目标比较代码实施路径，选定后拆成实施任务 | `implementation-planning` |
 | 按确认范围编写、修改或重构代码 | `software-implementation` |
 | 调查测试失败、缺陷或性能异常的根因 | `systematic-debugging` |
 | 只读审查 diff、提交或 PR | `code-review` |
@@ -25,7 +25,7 @@
 
 ## 容易混淆的边界
 
-- 单模块功能和用户场景归 `solution-design`；跨服务、部署单元、数据所有权或 SLO 归 `system-architecture`。
+- 单模块功能和用户场景归 `solution-design`；跨服务、部署单元、数据所有权或 SLO 归 `system-architecture`。目标与约束已定、要比较代码实施路径或拆任务时归 `implementation-planning`；明确要求直接改代码归 `software-implementation`。技术方案存在实质取舍时优先比较最小化改动、折衷与长期目标最优三档，不虚构不可行的候选。
 - 普通 diff 审查归 `code-review`；威胁模型和安全专项归 `security-assessment`。
 - 项目文档归 `technical-documentation`；个人学习文章和复习材料归 `learning-note`。
 - `web-research` 负责找证据，其他 Skill 负责把证据用于选型、文档或学习材料。

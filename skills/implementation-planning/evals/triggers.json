@@ -11,6 +11,14 @@
     {
       "request": "为已确认需求编写分阶段编码计划",
       "expected": "implementation-planning"
+    },
+    {
+      "request": "目标和约束都确认了，请比较现有代码的几种实施路径并给出任务计划",
+      "expected": "implementation-planning"
+    },
+    {
+      "request": "验收条件已定，先对比改动最少、折衷和长期方案，不要改代码",
+      "expected": "implementation-planning"
     }
   ],
   "negative": [
@@ -28,6 +36,12 @@
     },
     {
       "request": "从零选择消息队列产品",
+      "forbidden": [
+        "implementation-planning"
+      ]
+    },
+    {
+      "request": "需求尚未明确，请先设计功能行为和验收标准",
       "forbidden": [
         "implementation-planning"
       ]

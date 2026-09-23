@@ -15,6 +15,10 @@
     {
       "request": "复用现有能力，以最小修改实现已确认需求",
       "expected": "software-implementation"
+    },
+    {
+      "request": "直接改代码完成这个明确需求，能不用新依赖就不用",
+      "expected": "software-implementation"
     }
   ],
   "negative": [
@@ -32,6 +36,12 @@
     },
     {
       "request": "定位尚未确认根因的性能异常",
+      "forbidden": [
+        "software-implementation"
+      ]
+    },
+    {
+      "request": "只比较实现路径与改动量，暂时别修改代码",
       "forbidden": [
         "software-implementation"
       ]

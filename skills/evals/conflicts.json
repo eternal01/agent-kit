@@ -6,6 +6,21 @@
       "forbidden": ["system-architecture", "implementation-planning"]
     },
     {
+      "request": "这个功能能否沿用现有能力完成？先比较最省改动与长期方案，不要写代码",
+      "expected": "solution-design",
+      "forbidden": ["implementation-planning", "software-implementation"]
+    },
+    {
+      "request": "目标和约束都确认了，请比较现有代码的几种实施路径并给出任务计划",
+      "expected": "implementation-planning",
+      "forbidden": ["solution-design", "software-implementation"]
+    },
+    {
+      "request": "现有服务能否不拆分就满足隔离目标？比较保留边界和重构架构的代价",
+      "expected": "system-architecture",
+      "forbidden": ["solution-design", "implementation-planning"]
+    },
+    {
       "request": "设计跨服务边界、数据所有权和故障隔离",
       "expected": "system-architecture",
       "forbidden": ["solution-design", "technology-selection"]
