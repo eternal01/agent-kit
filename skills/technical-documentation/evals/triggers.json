@@ -1,5 +1,6 @@
 {
   "positive": [
+    { "request": "检查这份接入手册能否让没有会话背景的读者独立完成接入", "expected": "technical-documentation" },
     {
       "request": "根据现有代码重写 API 文档",
       "expected": "technical-documentation"
@@ -14,6 +15,7 @@
     }
   ],
   "negative": [
+    { "request": "整理当前会话的进度、验证证据与阻塞项，交接给下一位 Agent", "forbidden": ["technical-documentation"] },
     {
       "request": "替我决定系统架构",
       "forbidden": [

@@ -1,6 +1,6 @@
 # Agent Kit
 
-一组可移植的 Agent Skills，以及为 Pi 编写的本地扩展。Skill 处理需求澄清、架构、实施、审查、调试、文档、学习笔记和安全评估；扩展提供 GitHub 调研与 Anytype 访问。
+一组可移植的 Agent Skills，以及为 Pi 编写的本地扩展。Skill 处理需求澄清、架构、实施、审查、调试、文档、学习笔记、安全评估和会话交接；扩展提供 GitHub 调研与 Anytype 访问。
 
 ## 从任务开始
 
@@ -51,8 +51,9 @@
 ```bash
 ./scripts/validate-skills.mjs
 ./scripts/validate-minimal-change-benchmarks.mjs
+node scripts/validate-skill-evals.mjs
 ./scripts/check-docs.mjs
-node --test ./tests/skills/validate-skills.test.mjs ./tests/scripts/check-docs.test.mjs ./tests/benchmarks/validate-minimal-change-benchmarks.test.mjs
+node --test ./tests/skills/validate-skills.test.mjs ./tests/scripts/check-docs.test.mjs ./tests/benchmarks/validate-minimal-change-benchmarks.test.mjs ./tests/benchmarks/validate-skill-evals.test.mjs
 ./tests/scripts/skill-install.test.sh
 ./scripts/verify-pi-extensions.sh
 ```
@@ -63,7 +64,7 @@ node --test ./tests/skills/validate-skills.test.mjs ./tests/scripts/check-docs.t
 ./scripts/verify-pi-extensions.sh --live
 ```
 
-Skill 验证器检查结构、触发契约和跨 Skill 冲突矩阵，不调用模型。它不能代替真实 Agent 中的行为回放。
+Skill 验证器检查结构、触发契约和跨 Skill 冲突矩阵，不调用模型。它不能代替真实 Agent 中的行为回放。[行为对照评测](benchmarks/skill-behavior/README.md)提供开发/留出场景、基线运行协议和记录验证入口，不附带真实模型得分。
 
 ## 目录
 

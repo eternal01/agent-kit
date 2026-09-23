@@ -1,0 +1,13 @@
+{
+  "positive": [
+    { "request": "我要换一个会话继续，请整理当前进度、验证结果和下一步", "expected": "session-handoff" },
+    { "request": "把这次调试交接给另一位 Agent，记录失败尝试，先在聊天里输出", "expected": "session-handoff" },
+    { "request": "将当前任务的交接记录保存到 docs/handoff.md，不要继续实现", "expected": "session-handoff" }
+  ],
+  "negative": [
+    { "request": "梳理这个陌生仓库的入口和推荐阅读路径", "forbidden": ["session-handoff"] },
+    { "request": "根据现有代码编写部署手册", "forbidden": ["session-handoff"] },
+    { "request": "把已确认的消息队列决策记录为 ADR", "forbidden": ["session-handoff"] },
+    { "request": "按上次交接的计划继续修改代码", "forbidden": ["session-handoff"] }
+  ]
+}

@@ -1,5 +1,6 @@
 {
   "positive": [
+    { "request": "核验这些 PR 审查意见并修正成立的问题，每项给出测试证据", "expected": "software-implementation" },
     {
       "request": "按已确认计划实现这个功能",
       "expected": "software-implementation"
@@ -22,6 +23,8 @@
     }
   ],
   "negative": [
+    { "request": "我要换会话继续，请整理当前进度与下一步，不要继续实现", "forbidden": ["software-implementation"] },
+    { "request": "只判断这些审查意见是否成立，暂时别改代码", "forbidden": ["software-implementation"] },
     {
       "request": "先帮我澄清模糊需求",
       "forbidden": [

@@ -1,5 +1,6 @@
 {
   "positive": [
+    { "request": "字段迁移目标已确认，请规划新旧版本兼容、回填、切换与恢复任务，不执行迁移", "expected": "implementation-planning" },
     {
       "request": "根据确认的设计给出可执行实施计划",
       "expected": "implementation-planning"

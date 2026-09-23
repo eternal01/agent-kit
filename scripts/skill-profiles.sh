@@ -3,7 +3,7 @@
 
 declare -Ar SKILL_PROFILES=(
   [architecture]='architecture-decision implementation-planning system-architecture technology-selection'
-  [core-development]='code-review codebase-onboarding software-implementation solution-design systematic-debugging'
+  [core-development]='code-review codebase-onboarding session-handoff software-implementation solution-design systematic-debugging'
   [governance]='coding-standards grilling security-assessment skill-authoring'
   [knowledge]='learning-note technical-documentation web-research'
 )

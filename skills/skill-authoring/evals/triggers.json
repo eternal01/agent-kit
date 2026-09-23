@@ -1,5 +1,7 @@
 {
   "positive": [
+    { "request": "对比这个 Skill 的旧版和新版，用真实任务评测是否改善行为", "expected": "skill-authoring" },
+    { "request": "盘点现有 Skills 的重叠和过时内容，给出保留、合并或退役建议，不修改文件", "expected": "skill-authoring" },
     {
       "request": "创建一个新的 Agent Skill",
       "expected": "skill-authoring"

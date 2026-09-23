@@ -14,6 +14,7 @@
     }
   ],
   "negative": [
+    { "request": "整理当前会话的任务进度、失败尝试和下一步，交接给其他 Agent", "forbidden": ["codebase-onboarding"] },
     {
       "request": "为这个系统重新设计跨服务架构",
       "forbidden": ["codebase-onboarding"]

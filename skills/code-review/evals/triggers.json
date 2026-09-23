@@ -1,5 +1,6 @@
 {
   "positive": [
+    { "request": "只判断这些审查意见是否成立，暂时别改代码", "expected": "code-review" },
     {
       "request": "审查这个 PR 是否可以合并",
       "expected": "code-review"
@@ -14,6 +15,7 @@
     }
   ],
   "negative": [
+    { "request": "核验这些 PR 审查意见并修正成立的问题，每项给出测试证据", "forbidden": ["code-review"] },
     {
       "request": "请直接修复这个测试失败",
       "forbidden": [

@@ -1,6 +1,31 @@
 {
   "cases": [
     {
+      "request": "我要换会话继续，请整理当前进度、验证结果和下一步，不要继续改代码",
+      "expected": "session-handoff",
+      "forbidden": ["technical-documentation", "codebase-onboarding", "software-implementation"]
+    },
+    {
+      "request": "按上次交接中已确认的计划继续修改代码",
+      "expected": "software-implementation",
+      "forbidden": ["session-handoff", "technical-documentation"]
+    },
+    {
+      "request": "核验这些 PR 审查意见并修正成立的问题，每项给出测试证据",
+      "expected": "software-implementation",
+      "forbidden": ["code-review", "session-handoff"]
+    },
+    {
+      "request": "只判断这些审查意见是否成立，暂时别改代码",
+      "expected": "code-review",
+      "forbidden": ["software-implementation"]
+    },
+    {
+      "request": "只读盘点现有 Skills 的重叠与过时内容，提出合并或退役建议",
+      "expected": "skill-authoring",
+      "forbidden": ["code-review", "software-implementation"]
+    },
+    {
       "request": "把模糊需求整理成功能方案并给出验收标准",
       "expected": "solution-design",
       "forbidden": ["system-architecture", "implementation-planning"]

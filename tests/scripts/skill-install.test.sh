@@ -15,8 +15,11 @@ AGENT_SKILLS_DIR="$target" "$repo_root/scripts/link-skills.sh" >/dev/null
 
 profiles="$tmp/profiles"
 AGENT_SKILLS_DIR="$profiles" "$repo_root/scripts/link-skills.sh" --profile core-development >/dev/null
-[[ "$(find "$profiles" -mindepth 1 -maxdepth 1 -type l | wc -l)" -eq 5 ]]
+[[ "$(find "$profiles" -mindepth 1 -maxdepth 1 -type l | wc -l)" -eq 6 ]]
 [[ -L "$profiles/codebase-onboarding" ]]
+[[ -L "$profiles/session-handoff" ]]
+[[ -f "$profiles/session-handoff/references/template.md" ]]
+[[ -f "$profiles/session-handoff/evals/triggers.json" ]]
 AGENT_SKILLS_DIR="$profiles" "$repo_root/scripts/link-skills.sh" --skill code-review --prune >/dev/null
 [[ -L "$profiles/code-review" ]]
 [[ "$(find "$profiles" -mindepth 1 -maxdepth 1 -type l | wc -l)" -eq 1 ]]
@@ -35,4 +38,7 @@ AGENT_SKILLS_DIR="$snapshots" "$repo_root/scripts/build-skills.sh" --profile kno
 AGENT_SKILLS_DIR="$snapshots" "$repo_root/scripts/build-skills.sh" --skill web-research --prune >/dev/null
 [[ -d "$snapshots/web-research" ]]
 [[ ! -e "$snapshots/learning-note" ]]
+AGENT_SKILLS_DIR="$snapshots" "$repo_root/scripts/build-skills.sh" --skill session-handoff >/dev/null
+[[ -f "$snapshots/session-handoff/.agent-kit-managed" ]]
+[[ -f "$snapshots/session-handoff/references/template.md" ]]
 printf 'skill install lifecycle: OK\n'
