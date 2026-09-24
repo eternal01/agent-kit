@@ -43,7 +43,7 @@
 ```bash
 ./scripts/validate-skills.mjs
 node scripts/validate-skill-evals.mjs
-node --test ./tests/skills/validate-skills.test.mjs ./tests/benchmarks/validate-skill-evals.test.mjs
+node --test ./tests/skills/validate-skills.test.mjs ./tests/skills/replay-skill-triggers.test.mjs ./tests/benchmarks/validate-skill-evals.test.mjs
 ```
 
-验证器检查 frontmatter、目录和名称、触发契约、跨 Skill 冲突矩阵、相对链接，以及本目录与实际 Skill 的对应关系。它不调用模型，因此不能证明真实 Agent 一定会按预期触发。真实行为对照的输入准备、运行协议与记录格式见[行为评测](../benchmarks/skill-behavior/README.md)。
+验证器检查 frontmatter、目录和名称、触发契约、跨 Skill 冲突矩阵、相对链接，以及本目录与实际 Skill 的对应关系。它不调用模型，因此不能证明真实 Agent 一定会按预期触发。真实行为对照的输入准备、运行协议与记录格式见[行为评测](../benchmarks/skill-behavior/README.md)；需在 Pi 中验证自动触发时，可使用[触发回放](../benchmarks/skill-replay/README.md)，运行模型前先预览调用次数。触发回放不能替代任务产物与授权边界的行为评测。

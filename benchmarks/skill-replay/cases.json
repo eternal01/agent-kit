@@ -1,0 +1,64 @@
+{
+  "cases": [
+    {
+      "id": "feature-existing-capability",
+      "request": "先读 README.md。能不能不开发新组件，就让用户导出 CSV？请比较改动最少和长期方案，不要修改文件。",
+      "expected": "solution-design",
+      "forbidden": ["implementation-planning", "software-implementation"]
+    },
+    {
+      "id": "feature-acceptance",
+      "request": "参考 README.md，帮我设计用户自选导出列的功能行为和验收条件；优先沿用现在的导出能力。暂时别写代码。",
+      "expected": "solution-design",
+      "forbidden": ["implementation-planning", "software-implementation"]
+    },
+    {
+      "id": "feature-casual",
+      "request": "看下 README.md，导出完提醒用户这件事能不能少折腾？先聊功能做法和取舍，后面再考虑长期演进。",
+      "expected": "solution-design",
+      "forbidden": ["software-implementation", "system-architecture"]
+    },
+    {
+      "id": "feature-near-miss",
+      "request": "需求还没定，请基于 README.md 比较在报表页显示通知与另发邮件的用户行为差异，给出验收方式；不用拆编码任务。",
+      "expected": "solution-design",
+      "forbidden": ["implementation-planning", "system-architecture"]
+    },
+    {
+      "id": "planning-paths",
+      "request": "已确认目标：用户可以按列导出 CSV，保留 README.md 中的权限、错误提示与键盘要求。请比较低改动、折衷与长期实施路径及影响面，暂不要动代码。",
+      "expected": "implementation-planning",
+      "forbidden": ["solution-design", "software-implementation"]
+    },
+    {
+      "id": "planning-tasks",
+      "request": "需求已确认：启用 README.md 里已有的 CSV 导出开关，行为不变。请给出实施任务、验证方式和回滚点；只写计划，不修改文件。",
+      "expected": "implementation-planning",
+      "forbidden": ["solution-design", "software-implementation"]
+    },
+    {
+      "id": "planning-low-change",
+      "request": "验收要求已定：导出失败保持现有重试和日志。参考 README.md，比较配置、局部修改和引入新模块的实施代价，推荐路径并列出任务。",
+      "expected": "implementation-planning",
+      "forbidden": ["solution-design", "software-implementation"]
+    },
+    {
+      "id": "architecture-boundary",
+      "request": "现有服务如果不拆分，能否满足导出高峰不影响登录的隔离目标？结合 README.md 对比原地增强和拆分部署的代价与回滚方式，只做架构讨论。",
+      "expected": "system-architecture",
+      "forbidden": ["solution-design", "implementation-planning"]
+    },
+    {
+      "id": "architecture-data",
+      "request": "参考 README.md 规划报表和账户两个部署单元之间的数据所有权与故障隔离：比较维持单体、有限调整和拆分的成本；不做产品选型。",
+      "expected": "system-architecture",
+      "forbidden": ["technology-selection", "solution-design"]
+    },
+    {
+      "id": "selection-near-miss",
+      "request": "为 README.md 所述产品比较 PostgreSQL 和 MySQL 时，先设计候选评估维度、退出成本和最小 PoC；当前版本与价格没有联网证据就标为待核验，不用设计系统边界。",
+      "expected": "technology-selection",
+      "forbidden": ["system-architecture", "implementation-planning"]
+    }
+  ]
+}

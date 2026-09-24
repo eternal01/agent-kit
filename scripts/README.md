@@ -16,12 +16,14 @@
 | `./scripts/validate-skills.mjs` | 检查结构、引用、目录和触发契约 | 否 |
 | `./scripts/validate-minimal-change-benchmarks.mjs` | 检查最小充分变更基准场景结构 | 否 |
 | `node scripts/validate-skill-evals.mjs [场景目录] [runs.json路径]` | 检查行为评测场景；可选检查成对运行记录的结构与比较条件 | 否 |
-| `node --test ./tests/skills/validate-skills.test.mjs` | 运行验证器测试 | 否 |
+| `node --test ./tests/skills/validate-skills.test.mjs ./tests/skills/replay-skill-triggers.test.mjs` | 运行验证器与回放器测试（模拟 Pi） | 否 |
+| `node scripts/replay-skill-triggers.mjs` | 预览 Pi 回放的模型调用次数 | 否 |
+| `node scripts/replay-skill-triggers.mjs --live --model PROVIDER/MODEL` | 在只读模拟仓库中对比有/无 Skill 的实际触发与输出；会调用模型并写本地报告 | 是 |
 | `./tests/scripts/skill-install.test.sh` | 运行 Skill 安装生命周期测试 | 否 |
 
 默认目标是 `~/.agents/skills/`，可用 `AGENT_SKILLS_DIR` 覆盖。`--skill` 和 `--profile` 可重复组合；未选择时安装全部。可用 profile 为 `core-development`、`architecture`、`governance` 和 `knowledge`。`--prune` 只删除指向本仓库的链接，或带 `.agent-kit-managed` 标记的快照。链接脚本默认不替换普通目录；迁移旧副本时显式使用 `--replace-copies`。
 
-验证器不调用模型。`evals/triggers.json` 与 `evals/conflicts.json` 是可审查的发现契约，不是实际模型准确率报告。行为评测的用例准备、授权、运行协议和记录格式见[行为对照评测](../benchmarks/skill-behavior/README.md)。运行记录结构通过不证明证据属实或行为通过。
+验证器不调用模型。`evals/triggers.json` 与 `evals/conflicts.json` 是可审查的发现契约，不是实际模型准确率报告。行为评测的用例准备、授权、运行协议和记录格式见[行为对照评测](../benchmarks/skill-behavior/README.md)；Pi 触发回放的用法、费用和数据边界见[回放说明](../benchmarks/skill-replay/README.md)。回放器仅检查触发，不能替代行为评测；运行记录结构通过也不证明证据属实或行为通过。
 
 `core-development` 包含 `session-handoff`；安装生命周期测试在临时目标目录中验证链接、快照与裁剪，不更改真实安装目录。
 

@@ -31,7 +31,7 @@ printf 'Shell syntax: OK\n'
 
 bash "$repo_root/tests/scripts/pi-extension-install.test.sh"
 bash "$repo_root/tests/scripts/skill-install.test.sh"
-node --test "$repo_root/tests/skills/validate-skills.test.mjs" "$repo_root/tests/scripts/check-docs.test.mjs" "$repo_root/tests/benchmarks/validate-minimal-change-benchmarks.test.mjs" "$repo_root/tests/benchmarks/validate-skill-evals.test.mjs"
+node --test "$repo_root/tests/skills/validate-skills.test.mjs" "$repo_root/tests/skills/replay-skill-triggers.test.mjs" "$repo_root/tests/scripts/check-docs.test.mjs" "$repo_root/tests/benchmarks/validate-minimal-change-benchmarks.test.mjs" "$repo_root/tests/benchmarks/validate-skill-evals.test.mjs"
 "$repo_root/scripts/validate-skills.mjs" "$repo_root/skills"
 "$repo_root/scripts/validate-minimal-change-benchmarks.mjs"
 node "$repo_root/scripts/validate-skill-evals.mjs"
