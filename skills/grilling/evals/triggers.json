@@ -31,6 +31,10 @@
       "forbidden": [
         "grilling"
       ]
+    },
+    {
+      "request": "决定已经确认，仅将这项技术决策写成 ADR，不再压力测试",
+      "forbidden": ["grilling"]
     }
   ]
 }

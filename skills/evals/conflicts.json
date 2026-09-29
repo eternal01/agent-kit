@@ -33,7 +33,7 @@
     {
       "request": "这个功能能否沿用现有能力完成？先比较最省改动与长期方案，不要写代码",
       "expected": "solution-design",
-      "forbidden": ["implementation-planning", "software-implementation"]
+      "forbidden": ["implementation-planning", "software-implementation", "system-architecture"]
     },
     {
       "request": "目标和约束都确认了，请比较现有代码的几种实施路径并给出任务计划",
@@ -89,6 +89,66 @@
       "request": "对生产数据迁移方案进行对抗性压力测试",
       "expected": "grilling",
       "forbidden": ["solution-design", "implementation-planning"]
+    },
+    {
+      "request": "功能验收还未确定，比较复用已有能力和改交互流程的效果，不拆编码任务",
+      "expected": "solution-design",
+      "forbidden": ["system-architecture", "implementation-planning"]
+    },
+    {
+      "request": "功能验收已定，比较现有服务边界和拆分服务的故障隔离、数据所有权及迁移风险",
+      "expected": "system-architecture",
+      "forbidden": ["solution-design", "implementation-planning"]
+    },
+    {
+      "request": "功能与架构均已确认，只比较复用现有模块或新增适配层的代码影响并拆任务",
+      "expected": "implementation-planning",
+      "forbidden": ["solution-design", "system-architecture"]
+    },
+    {
+      "request": "压力测试高风险方案，决定未确认，先别写 ADR",
+      "expected": "grilling",
+      "forbidden": ["architecture-decision"]
+    },
+    {
+      "request": "决定已经确认，仅将这项技术决策写成 ADR，不再压力测试",
+      "expected": "architecture-decision",
+      "forbidden": ["grilling"]
+    },
+    {
+      "request": "只在对话中把这篇文章整理成复习笔记，不要访问知识库",
+      "expected": "learning-note",
+      "forbidden": ["technical-documentation", "web-research"]
+    },
+    {
+      "request": "需求仍待确认，工期紧，比较现有流程的最小功能改动、折中体验和长期功能方案，说明暂留问题",
+      "expected": "solution-design",
+      "forbidden": ["system-architecture", "implementation-planning"]
+    },
+    {
+      "request": "现有服务边界能否先不拆？比较最小调整、折中隔离和长期拆分的工期与架构债",
+      "expected": "system-architecture",
+      "forbidden": ["solution-design", "implementation-planning"]
+    },
+    {
+      "request": "目标和架构已定，工期紧；比较最小代码改动、折中实现和长期重构，列出技术债偿还任务",
+      "expected": "implementation-planning",
+      "forbidden": ["solution-design", "system-architecture"]
+    },
+    {
+      "request": "现有服务不拆分能否满足隔离目标？比较原地增强和拆分部署的回滚代价",
+      "expected": "system-architecture",
+      "forbidden": ["solution-design", "implementation-planning"]
+    },
+    {
+      "request": "需求未确认且只有一周，比较复用 CSV 导出与增加完成通知的用户体验；不讨论拆服务",
+      "expected": "solution-design",
+      "forbidden": ["system-architecture", "implementation-planning"]
+    },
+    {
+      "request": "先读 README.md。能不能不开发新组件，就让用户导出 CSV？请比较改动最少和长期方案，不要修改文件。",
+      "expected": "solution-design",
+      "forbidden": ["system-architecture", "implementation-planning", "software-implementation"]
     }
   ]
 }

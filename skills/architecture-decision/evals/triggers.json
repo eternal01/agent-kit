@@ -31,6 +31,10 @@
       "forbidden": [
         "architecture-decision"
       ]
+    },
+    {
+      "request": "压力测试高风险方案，决定未确认，先别写 ADR",
+      "forbidden": ["architecture-decision"]
     }
   ]
 }

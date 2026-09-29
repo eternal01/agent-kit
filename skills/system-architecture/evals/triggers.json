@@ -15,6 +15,14 @@
     {
       "request": "现有服务能否不拆分就满足隔离目标？比较保留边界和重构架构的代价",
       "expected": "system-architecture"
+    },
+    {
+      "request": "现有服务不拆分能否满足隔离目标？比较原地增强和拆分部署的回滚代价",
+      "expected": "system-architecture"
+    },
+    {
+      "request": "复用现有服务还是拆分部署？比较报表与账户的数据所有权和故障隔离",
+      "expected": "system-architecture"
     }
   ],
   "negative": [
@@ -35,6 +43,14 @@
       "forbidden": [
         "system-architecture"
       ]
+    },
+    {
+      "request": "功能与架构均已确认，只比较复用现有模块或新增适配层的代码影响并拆任务",
+      "forbidden": ["system-architecture"]
+    },
+    {
+      "request": "先读 README.md。能不能不开发新组件，就让用户导出 CSV？请比较改动最少和长期方案，不要修改文件。",
+      "forbidden": ["system-architecture"]
     }
   ]
 }

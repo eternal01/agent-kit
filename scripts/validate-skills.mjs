@@ -101,14 +101,17 @@ export function validateSkills(skillsDirectory) {
     } else {
       const name = metadata.name;
       const description = metadata.description;
-      if (!name || !/^[a-z0-9][a-z0-9-]*$/.test(name)) {
-        addError("invalid_name", skillFile, "frontmatter name must use kebab-case");
+      if (!name || Array.from(name).length > 64 || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(name)) {
+        addError("invalid_name", skillFile, "frontmatter name must be at most 64 characters and use lowercase letters, numbers and single hyphens");
       } else if (name !== entry.name) {
         addError("name_directory_mismatch", skillFile, `frontmatter name '${name}' must equal directory '${entry.name}'`);
       }
       if (!description) {
         addError("missing_description", skillFile, "frontmatter description is required");
       } else {
+        if (Array.from(description).length > 1024) {
+          addError("description_too_long", skillFile, "frontmatter description must be at most 1024 characters");
+        }
         if (!/(仅在|适用于|(?<!不)用于|在.+(?:时|中)|use when|only when)/i.test(description)) {
           addError("missing_applicability_boundary", skillFile, "description must state when the skill applies");
         }

@@ -4,7 +4,7 @@
       "id": "feature-existing-capability",
       "request": "先读 README.md。能不能不开发新组件，就让用户导出 CSV？请比较改动最少和长期方案，不要修改文件。",
       "expected": "solution-design",
-      "forbidden": ["implementation-planning", "software-implementation"]
+      "forbidden": ["implementation-planning", "software-implementation", "system-architecture"]
     },
     {
       "id": "feature-acceptance",

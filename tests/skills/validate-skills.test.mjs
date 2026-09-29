@@ -32,6 +32,26 @@ test("detects malformed frontmatter and missing trigger boundaries", () => {
   assert.ok(result.includes("missing_exclusion_boundary"));
 });
 
+test("enforces Agent Skills frontmatter name and description limits", () => {
+  const temporary = mkdtempSync(join(tmpdir(), "agent-kit-spec-"));
+  const skills = join(temporary, "skills");
+  try {
+    cpSync(join(fixtures, "valid", "skills"), skills, { recursive: true });
+    const alpha = join(skills, "alpha", "SKILL.md");
+    const original = `---\nname: alpha\ndescription: 仅在需要 Alpha 时使用；不用于 Beta。\n---\n\n# Alpha\n\nRead the [guide](references/guide.md).\n`;
+    for (const name of ["a--b", "a".repeat(65)]) {
+      writeFileSync(alpha, original.replace("name: alpha", `name: ${name}`));
+      assert.ok(validateSkills(skills).errors.some(({ code }) => code === "invalid_name"), name);
+    }
+    writeFileSync(alpha, original.replace("仅在需要 Alpha 时使用；不用于 Beta。", `仅在需要 Alpha 时使用；不用于 Beta。${"长".repeat(1025)}`));
+    assert.ok(validateSkills(skills).errors.some(({ code }) => code === "description_too_long"));
+    writeFileSync(alpha, original);
+    assert.equal(validateSkills(skills).ok, true);
+  } finally {
+    rmSync(temporary, { recursive: true, force: true });
+  }
+});
+
 test("detects broken and escaping relative links", () => {
   const result = codes("links");
   assert.ok(result.includes("broken_relative_link"));

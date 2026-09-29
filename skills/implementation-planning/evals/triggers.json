@@ -46,6 +46,10 @@
       "forbidden": [
         "implementation-planning"
       ]
+    },
+    {
+      "request": "功能验收已定，比较保留现有服务边界与拆分服务的故障隔离和数据所有权",
+      "forbidden": ["implementation-planning"]
     }
   ]
 }

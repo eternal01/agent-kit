@@ -17,8 +17,8 @@
 | `./scripts/validate-minimal-change-benchmarks.mjs` | 检查最小充分变更基准场景结构 | 否 |
 | `node scripts/validate-skill-evals.mjs [场景目录] [runs.json路径]` | 检查行为评测场景；可选检查成对运行记录的结构与比较条件 | 否 |
 | `node --test ./tests/skills/validate-skills.test.mjs ./tests/skills/replay-skill-triggers.test.mjs` | 运行验证器与回放器测试（模拟 Pi） | 否 |
-| `node scripts/replay-skill-triggers.mjs` | 预览 Pi 回放的模型调用次数 | 否 |
-| `node scripts/replay-skill-triggers.mjs --live --model PROVIDER/MODEL` | 在只读模拟仓库中对比有/无 Skill 的实际触发与输出；会调用模型并写本地报告 | 是 |
+| `node scripts/replay-skill-triggers.mjs` | 预览 Pi 回放的启动次数（不等于模型 API 请求数） | 否 |
+| `node scripts/replay-skill-triggers.mjs --live --model PROVIDER/MODEL --max-invocations N --budget-file /path/to/budget.json` | 在只读模拟仓库中对比有/无 Skill 的触发与输出；按共享预算限制 Pi 启动，不能保证模型 API 请求上限 | 是 |
 | `./tests/scripts/skill-install.test.sh` | 运行 Skill 安装生命周期测试 | 否 |
 
 默认目标是 `~/.agents/skills/`，可用 `AGENT_SKILLS_DIR` 覆盖。`--skill` 和 `--profile` 可重复组合；未选择时安装全部。可用 profile 为 `core-development`、`architecture`、`governance` 和 `knowledge`。`--prune` 只删除指向本仓库的链接，或带 `.agent-kit-managed` 标记的快照。链接脚本默认不替换普通目录；迁移旧副本时显式使用 `--replace-copies`。

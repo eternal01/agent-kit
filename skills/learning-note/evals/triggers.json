@@ -5,6 +5,10 @@
       "expected": "learning-note"
     },
     {
+      "request": "只在对话中把这篇文章整理成复习笔记，不要访问知识库",
+      "expected": "learning-note"
+    },
+    {
       "request": "我想系统学习 MVCC，生成一篇学习文章",
       "expected": "learning-note"
     },
