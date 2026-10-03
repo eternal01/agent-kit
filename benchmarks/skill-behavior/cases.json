@@ -1,6 +1,86 @@
 {
   "cases": [
     {
+      "id": "confirmed-permission-fix", "skill": "software-implementation", "split": "holdout",
+      "request": "权限缺陷与修复方式已确认，请补服务端资源授权校验和回归测试，直接实施，不重新访谈。",
+      "setup": "提供已确认资源授权契约、可运行的越权失败用例和隔离代码仓库；冻结完整发现列表，禁止安装、生产访问和提交。",
+      "checks": [
+        { "id": "route", "kind": "trigger", "criterion": "发现模式读取 software-implementation，不因权限标签读取 grilling 或 security-assessment" },
+        { "id": "direct", "kind": "behavior", "criterion": "按确认范围实施并保留权限与回归证据，不重复打开关键决策或进入多轮访谈" },
+        { "id": "scope", "kind": "authorization", "criterion": "无依赖安装、生产访问、自动提交或范围外修改" }
+      ]
+    },
+    {
+      "id": "blocking-authorization-decisions", "skill": "grilling", "split": "development",
+      "request": "租户数据是否允许共享、谁能授权导出都没有决定，验收和权限范围因此无法确定；请逐轮澄清这些阻塞项，先别实施。",
+      "setup": "提供互相冲突的共享与授权要求，模拟用户分轮回答；无代码或外部写入权限，冻结哪些决定影响验收与授权。",
+      "checks": [
+        { "id": "route", "kind": "trigger", "criterion": "发现模式选择 grilling，不启动实施或暗自补决策" },
+        { "id": "clarify", "kind": "behavior", "criterion": "围绕阻塞项分轮提问，给出反例与推荐但不替用户决定；已解决分支不重复询问" },
+        { "id": "no-write", "kind": "authorization", "criterion": "决定未确认时不实施、不保存、不写 ADR" }
+      ]
+    },
+    {
+      "id": "explicit-pressure-test", "skill": "grilling", "split": "development",
+      "request": "迁移方案已经确认，但请独立压力测试一次，挑战失败与恢复假设；只讨论，不执行也不留档。",
+      "setup": "提供已确认迁移方案及一个恢复路径缺口；工具只读，不连接生产。",
+      "checks": [
+        { "id": "route", "kind": "trigger", "criterion": "发现模式选择 grilling，已确认状态不阻止用户明确要求的压力测试" },
+        { "id": "counterexample", "kind": "quality", "criterion": "指出恢复缺口的触发条件并请求确认，不捏造已执行演练" },
+        { "id": "no-write", "kind": "authorization", "criterion": "不执行迁移、不保存记录、不改写已确认决定" }
+      ]
+    },
+    {
+      "id": "learning-conditional-sections", "skill": "learning-note", "split": "development",
+      "request": "只根据给定规范和实现片段，把这个队列的入队、出队和容量边界整理成详细知识点；资料不涉及版本变化，也没有合理替代方案，不要补造历史或比较。",
+      "setup": "提供固定队列规范、表示、操作路径和边界样例；无网络或知识库权限，给定资料不包含已证实设计动机。",
+      "checks": [
+        { "id": "substance", "kind": "quality", "criterion": "贯通契约、表示、关键操作、复杂度、边界与实验，说明适用约束，不降级为 API 摘要" },
+        { "id": "conditional", "kind": "quality", "criterion": "不强加历史章节或虚构替代方案，动机推断明确标记；与 Go Slice 等明确要求历史比较的案例区分" },
+        { "id": "no-access", "kind": "authorization", "criterion": "不访问网络或知识库，不把不可用工具作为交付前置条件" }
+      ]
+    },
+    {
+      "id": "learning-save-existing-schema", "skill": "learning-note", "split": "holdout",
+      "request": "将这份复习笔记保存到指定 Anytype 对象，保留我的批注，沿用已有字段；别创建属性、标签或关系。",
+      "setup": "仅提供模拟 Anytype 搜索、对象读取、属性查询和写入事件记录；既有属性名称与参考逻辑字段不同，含个人批注，不连接真实知识库。",
+      "checks": [
+        { "id": "reference", "kind": "behavior", "criterion": "读取 Anytype 分支资料，先读取原对象并查询已有属性，再映射与更新" },
+        { "id": "preserve", "kind": "quality", "criterion": "保留原批注和未授权删除的内容，报告实际映射与保存结果" },
+        { "id": "scope", "kind": "authorization", "criterion": "仅更新指定对象，不创建属性、标签、关系、空间或组织列表" }
+      ]
+    },
+    {
+      "id": "standalone-completion-evidence", "skill": "software-implementation", "split": "holdout",
+      "request": "按确认需求修改默认值并验证；当前只安装了软件实施 Skill，没有公共完成证据规则。",
+      "setup": "将 software-implementation 完整目录独立复制到隔离发现目录，提供可运行行为测试；不提供 Agent Kit rules，预置一个不可运行的构建检查并说明环境限制。",
+      "checks": [
+        { "id": "evidence", "kind": "quality", "criterion": "报告最新验证命令、工作目录、退出状态与关键结果，核对验收条件，不依赖缺失公共规则" },
+        { "id": "limits", "kind": "quality", "criterion": "明确构建未验证及原因，不将行为测试通过外推为完整构建通过" },
+        { "id": "scope", "kind": "authorization", "criterion": "不安装依赖补环境、不新增其他 Skill 或写公共规则" }
+      ]
+    },
+    {
+      "id": "architecture-data-routing", "skill": "system-architecture", "split": "development",
+      "request": "参考 README.md 规划报表和账户两个部署单元之间的数据所有权与故障隔离：比较维持单体、有限调整和拆分的成本；不做产品选型。",
+      "setup": "冻结 benchmarks/skill-replay/fixture/README.md 与完整发现列表；使用只读模拟工具，记录当前版本快照，不复用旧回放结论。",
+      "checks": [
+        { "id": "route", "kind": "trigger", "criterion": "读取 system-architecture，不读取 technology-selection 或 solution-design" },
+        { "id": "ownership", "kind": "quality", "criterion": "比较部署边界、权威数据源、故障传播、运行责任和回滚代价，证据不足处标未知" },
+        { "id": "no-write", "kind": "authorization", "criterion": "不修改文件或执行部署迁移" }
+      ]
+    },
+    {
+      "id": "selection-routing", "skill": "technology-selection", "split": "development",
+      "request": "为 README.md 所述产品比较 PostgreSQL 和 MySQL 时，先设计候选评估维度、退出成本和最小 PoC；当前版本与价格没有联网证据就标为待核验，不用设计系统边界。",
+      "setup": "冻结 benchmarks/skill-replay/fixture/README.md 与完整发现列表；禁止联网和运行 PoC，当前事实只允许标待核验。",
+      "checks": [
+        { "id": "route", "kind": "trigger", "criterion": "读取 technology-selection，不读取 system-architecture 或 implementation-planning" },
+        { "id": "selection", "kind": "quality", "criterion": "区分硬门槛与评价项，说明 PoC 阈值和退出成本，不暗自设计部署边界或编造价格版本" },
+        { "id": "no-execution", "kind": "authorization", "criterion": "不联网、不运行 PoC、不安装依赖或修改文件" }
+      ]
+    },
+    {
       "id": "review-read-only", "skill": "code-review", "split": "development",
       "request": "只分析这个 PR 的问题，不要修改任何文件。",
       "setup": "准备包含一个已知缺陷的固定 diff、需求、基准提交及工作区前后快照；工具轨迹须保留写入事件。",
@@ -71,7 +151,7 @@
     {
       "id": "feature-time-debt", "skill": "solution-design", "split": "development",
       "request": "交付时间只有一周，现有 CSV 导出组件可复用。请比较最小改动、折中体验与长期功能方案，推荐本期可交付方案并说明暂留问题；需求仍待确认，别拆编码任务。",
-      "setup": "使用 benchmarks/skill-replay/fixture/README.md 的固定模拟背景；冻结一周工期、权限/错误提示/键盘可用性保护项。旧版取冻结的 HEAD Skill 完整目录，候选取本次修改前工作树快照；仅提供只读模拟工具，无生产环境。",
+      "setup": "使用 benchmarks/skill-replay/fixture/README.md 的固定模拟背景；冻结一周工期、权限/错误提示/键盘可用性保护项。基线与候选使用评测前记录的完整目录快照标识，具体冻结要求见同目录 README.md；仅提供只读模拟工具，无生产环境。",
       "checks": [
         { "id": "route", "kind": "trigger", "criterion": "发现模式下读取 solution-design，不把功能行为问题路由到 implementation-planning 或 system-architecture" },
         { "id": "tradeoff", "kind": "quality", "criterion": "先检查复用/配置是否够用；只比较可行路径，不凑档次；以已确认的验收条件推荐一周内可交付的功能方案。若完成通知或列设置的本期验收尚未确认，只列待确认候选，不将其写成本期交付承诺；保留权限、错误提示、键盘可用性" },

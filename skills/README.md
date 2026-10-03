@@ -30,8 +30,8 @@
 - 普通 diff 或反馈成立性审查归 `code-review`；明确要求核验并修正审查意见归 `software-implementation`；威胁模型和安全专项归 `security-assessment`。
 - 项目文档与陌生读者测试归 `technical-documentation`；个人学习文章和复习材料归 `learning-note`；当前任务状态交接归 `session-handoff`，不自动继续实施或保存文件。
 - `web-research` 负责找证据，其他 Skill 负责把证据用于选型、文档或学习材料。
-- `grilling` 只在高风险、重大歧义或用户明确要求时启用；其他 Skill 不隐式加载它。用户要求留档时才写入术语、决定或 ADR。
-- 所有完成、修复、可合并或检查通过的声明均遵循公共完成证据规则；它不是独立的可发现 Skill。
+- `grilling` 用于用户明确要求的压力测试，或确实阻塞任务、需要多轮澄清的重大未决问题；安全、权限、生产或迁移标签本身不触发独立访谈。常规风险检查由当前任务 Skill 完成，其他 Skill 不隐式加载它。用户要求留档时才写入术语、决定或 ADR。
+- 可独立安装的 Skill 应自带完成声明所需的最小证据要求，不依赖本仓库公共规则。Agent Kit 内的完成、修复、可合并或检查通过声明还遵循[项目完成证据规则](../rules/completion-evidence.md)；它不是独立的可发现 Skill。
 - `codebase-onboarding` 还原现有系统；`system-architecture` 设计未来的跨服务或部署结构。
 
 ## 文件结构

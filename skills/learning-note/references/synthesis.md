@@ -20,19 +20,9 @@
 - 来源列表保留标题、URL、版本或发布日期和访问日期；源码链接尽量绑定 Tag 或 Commit。
 - 详细知识点的证据顺序通常为规范/标准 → 官方文档 → 官方源码与发行说明 → 官方提案/设计文档 → 维护者说明 → 社区资料。社区资料用于发现问题，不能覆盖更高等级证据。
 
-## Anytype 最小属性
+## 保存与映射
 
-可使用现有 Page 类型，并按需要增加：
-
-- `knowledge_kind`：quick-note、deep-dive、learning-guide、source-note、comparison、reflection
-- `knowledge_status`：inbox、learning、evergreen、revisit、archived
-- `topics`：主题标签
-- `source_url`、`source_date`
-- `review_after`
-- `confidence`：high、medium、low
-- `related_notes`：Objects 关系
-
-属性是导航手段，不要求一次建齐。写入前先查询现有属性并复用等价字段；用户明确要求保存笔记时才创建或更新对象，创建新属性、标签或关系须另行确认，不因保存笔记而默认创建。逻辑类型与实际属性名不一致时，以知识库现状为准，并在结果中说明映射。
+整理和关联内容不等于授权写入知识库。使用 Anytype 时按[Anytype 操作约束与属性映射](anytype.md)执行；其他目的地沿用已有结构，不默认添加元数据。
 
 ## 复习
 

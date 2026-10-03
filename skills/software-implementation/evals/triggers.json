@@ -1,6 +1,7 @@
 {
   "positive": [
     { "request": "核验这些 PR 审查意见并修正成立的问题，每项给出测试证据", "expected": "software-implementation" },
+    { "request": "权限缺陷与修复方式已确认，请补服务端资源授权校验和回归测试，直接实施，不重新访谈", "expected": "software-implementation" },
     {
       "request": "按已确认计划实现这个功能",
       "expected": "software-implementation"
