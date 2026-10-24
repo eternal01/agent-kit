@@ -12,6 +12,11 @@ const httpAgent = new HttpAgent({ keepAlive: true, maxSockets: 10 });
 const httpsAgent = new HttpsAgent({ keepAlive: true, maxSockets: 10 });
 const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1", "host.docker.internal"]);
 
+function connectionHostname(url: URL): string {
+	// URL.hostname includes brackets for IPv6 literals; node:http expects bare IPs.
+	return url.hostname.replace(/^\[(.*)\]$/, "$1");
+}
+
 class ResponseTooLargeError extends Error {}
 
 export type AnytypeClientConfig = {
@@ -34,7 +39,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AnytypeClientC
 	if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
 		throw new Error("ANYTYPE_BASE_URL 必须使用 HTTP 或 HTTPS");
 	}
-	const isLocal = LOCAL_HOSTS.has(parsed.hostname);
+	const isLocal = LOCAL_HOSTS.has(connectionHostname(parsed));
 	const allowRemote = env.ANYTYPE_ALLOW_REMOTE === "1";
 	if (!isLocal && !allowRemote) {
 		throw new Error("ANYTYPE_BASE_URL 默认只允许本机地址；远程 HTTPS 服务需显式设置 ANYTYPE_ALLOW_REMOTE=1");
@@ -107,7 +112,7 @@ async function requestWithHost(
 			reject(error);
 		};
 		const requestOptions = {
-			hostname: url.hostname,
+			hostname: connectionHostname(url),
 			port: url.port || undefined,
 			path: `${url.pathname}${url.search}`,
 			method: options.method,

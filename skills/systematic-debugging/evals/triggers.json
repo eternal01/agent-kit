@@ -11,6 +11,10 @@
     {
       "request": "这个行为不符合预期，请做最小复现",
       "expected": "systematic-debugging"
+    },
+    {
+      "request": "前两个根因假设都被日志证伪了，继续根据证据定位，不要因为假设失败而改架构",
+      "expected": "systematic-debugging"
     }
   ],
   "negative": [

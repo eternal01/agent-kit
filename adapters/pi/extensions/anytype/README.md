@@ -14,7 +14,7 @@ export ANYTYPE_API_KEY='通过 Anytype Settings > API Keys 创建的 Key'
 export ANYTYPE_DEFAULT_SPACE_ID='可选的默认 Space ID'
 ```
 
-不要把 API Key 写入镜像或仓库。扩展默认只允许回环地址和 `host.docker.internal`；远程 API 必须使用 HTTPS，并显式设置 `ANYTYPE_ALLOW_REMOTE=1`。
+不要把 API Key 写入镜像或仓库。扩展默认只允许回环地址和 `host.docker.internal`，包括 IPv6 回环 URL `http://[::1]:31010`；使用 IPv6 服务时，相应设置 `ANYTYPE_HOST_HEADER='[::1]:31010'`。远程 API 必须使用 HTTPS，并显式设置 `ANYTYPE_ALLOW_REMOTE=1`。
 
 ## 工具
 

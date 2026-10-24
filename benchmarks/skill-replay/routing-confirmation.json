@@ -1,0 +1,28 @@
+{
+  "cases": [
+    {
+      "id": "feature-roadmap-context",
+      "request": "先读 README.md。报表产品以后可能独立部署，但这次只是想让用户更方便地得到导出结果；比较直接下载和完成后提醒这两种使用体验，列出需要确认的行为。",
+      "expected": "solution-design",
+      "forbidden": ["system-architecture", "implementation-planning", "software-implementation"]
+    },
+    {
+      "id": "planning-comparison-only",
+      "request": "本期范围已经确定：导出列只在当次选择，不保存偏好，沿用原权限、报错和键盘行为。结合 README.md 比较复用 CSV 组件与局部封装的接口改动、验证和回退成本；先只选实施路径，不需要任务清单。",
+      "expected": "implementation-planning",
+      "forbidden": ["solution-design", "system-architecture", "software-implementation"]
+    },
+    {
+      "id": "feature-confirmed-goal-open-behavior",
+      "request": "虽然导出功能目标已经确认，但列选择是在报表页常驻还是导出时弹出仍有分歧。参考 README.md 比较两种用户流程并提出验收候选，暂不讨论代码怎么改。",
+      "expected": "solution-design",
+      "forbidden": ["implementation-planning", "system-architecture", "software-implementation"]
+    },
+    {
+      "id": "architecture-current-isolation-request",
+      "request": "当前要决定 README.md 中报表执行和登录是否继续共用部署资源；请评估不拆服务与独立部署各自的故障传播、数据访问所有权和容量隔离，不需要设计用户流程。",
+      "expected": "system-architecture",
+      "forbidden": ["solution-design", "implementation-planning", "software-implementation"]
+    }
+  ]
+}

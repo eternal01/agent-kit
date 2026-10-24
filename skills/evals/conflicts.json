@@ -1,6 +1,36 @@
 {
   "cases": [
     {
+      "request": "已确认目标：用户可以按列导出 CSV，保留 README.md 中的权限、错误提示与键盘要求。请比较低改动、折衷与长期实施路径及影响面，暂不要动代码。",
+      "expected": "implementation-planning",
+      "forbidden": ["solution-design", "system-architecture", "software-implementation"]
+    },
+    {
+      "request": "筛选行为与验收已定，先比较配置现有模块、局部修改和加适配层的接口影响与回退代价，不必拆任务。",
+      "expected": "implementation-planning",
+      "forbidden": ["solution-design", "system-architecture", "software-implementation"]
+    },
+    {
+      "request": "仓库路线图提到未来分区部署；眼下只想知道现有检索组件能否支持按标签筛选，以及后续功能怎么演进。先讨论，不改文件。",
+      "expected": "solution-design",
+      "forbidden": ["system-architecture", "implementation-planning", "software-implementation"]
+    },
+    {
+      "request": "搜索功能目标已确认，但筛选放在侧栏还是弹窗还没决定，请比较交互体验并明确验收，不讨论代码影响面。",
+      "expected": "solution-design",
+      "forbidden": ["implementation-planning", "system-architecture", "software-implementation"]
+    },
+    {
+      "request": "生产结账事故正在扩大，请协调负责人、状态时间线和安全的恢复选项；不要调查本地缺陷或执行生产变更",
+      "expected": "incident-response",
+      "forbidden": ["systematic-debugging", "software-implementation", "grilling"]
+    },
+    {
+      "request": "线上服务已恢复，现在只查明导致配置传播失败的技术根因并补本地回归测试，不需要事故协调",
+      "expected": "systematic-debugging",
+      "forbidden": ["incident-response", "grilling"]
+    },
+    {
       "request": "权限缺陷与修复方式已确认，请补服务端资源授权校验和回归测试，直接实施，不重新访谈",
       "expected": "software-implementation",
       "forbidden": ["grilling", "security-assessment"]

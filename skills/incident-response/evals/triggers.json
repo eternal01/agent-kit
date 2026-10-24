@@ -1,0 +1,14 @@
+{
+  "positive": [
+    { "request": "线上结账错误率持续升高，帮我组织事故响应，先给止损选项和验证指标，不要直接改生产", "expected": "incident-response" },
+    { "request": "现在跨区故障正在扩大，整理事件指挥、操作、沟通职责和每 15 分钟状态更新草稿", "expected": "incident-response" },
+    { "request": "我们正在做故障演练，帮忙准备响应时间线、行动记录和交接清单", "expected": "incident-response" },
+    { "request": "事故已暂时缓解，下一班接手，请总结影响、已做动作、未验证项和下一次更新时间", "expected": "incident-response" }
+  ],
+  "negative": [
+    { "request": "本地单测失败了，请稳定复现并定位根因", "forbidden": ["incident-response"] },
+    { "request": "请评估这个 API 的攻击面和租户越权风险", "forbidden": ["incident-response"] },
+    { "request": "帮我写昨天事故的正式复盘，分析根因和长期整改项", "forbidden": ["incident-response"] },
+    { "request": "为计划中的数据库字段迁移安排灰度、兼容和回滚任务", "forbidden": ["incident-response"] }
+  ]
+}

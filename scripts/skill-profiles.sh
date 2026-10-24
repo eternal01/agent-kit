@@ -6,6 +6,7 @@ declare -Ar SKILL_PROFILES=(
   [core-development]='code-review codebase-onboarding session-handoff software-implementation solution-design systematic-debugging'
   [governance]='coding-standards grilling security-assessment skill-authoring'
   [knowledge]='learning-note technical-documentation web-research'
+  [operations]='incident-response systematic-debugging security-assessment'
 )
 
 list_skill_profiles() {

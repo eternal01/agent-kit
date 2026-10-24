@@ -1,5 +1,13 @@
 {
   "positive": [
+    {
+      "request": "已确认目标：用户可以按列导出 CSV，保留 README.md 中的权限、错误提示与键盘要求。请比较低改动、折衷与长期实施路径及影响面，暂不要动代码。",
+      "expected": "implementation-planning"
+    },
+    {
+      "request": "筛选行为与验收已定，先比较配置现有模块、局部修改和加适配层的接口影响与回退代价，不必拆任务。",
+      "expected": "implementation-planning"
+    },
     { "request": "字段迁移目标已确认，请规划新旧版本兼容、回填、切换与恢复任务，不执行迁移", "expected": "implementation-planning" },
     {
       "request": "根据确认的设计给出可执行实施计划",
@@ -23,6 +31,14 @@
     }
   ],
   "negative": [
+    {
+      "request": "搜索功能目标已确认，但筛选放在侧栏还是弹窗还没决定，请比较交互体验并明确验收，不讨论代码影响面。",
+      "forbidden": ["implementation-planning"]
+    },
+    {
+      "request": "仓库路线图提到未来分区部署；眼下只想知道现有检索组件能否支持按标签筛选，以及后续功能怎么演进。先讨论，不改文件。",
+      "forbidden": ["implementation-planning"]
+    },
     {
       "request": "需求还没定，请先比较功能方案",
       "forbidden": [

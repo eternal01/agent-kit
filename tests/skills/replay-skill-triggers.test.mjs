@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { analyzeEvents, summarize } from "../../scripts/replay-skill-triggers.mjs";
@@ -63,6 +63,43 @@ test("forbidden skill reads make an otherwise successful route fail", () => {
   assert.equal(summarize(records, [item])[0].status, "route_fail");
 });
 
+test("documented previews validate the default and confirmation cases without launching Pi", () => {
+  const script = join(repo, "scripts", "replay-skill-triggers.mjs");
+  const casesRoot = join(repo, "benchmarks", "skill-replay");
+  const plans = [
+    { args: ["--runs", "15"], invocations: 330 },
+    { args: ["--limit", "2", "--runs", "1"], invocations: 4 },
+    { args: ["--cases", join(casesRoot, "routing-confirmation.json")], invocations: 24 },
+  ];
+  for (const plan of plans) {
+    // Pi need not exist for a preview: a launch attempt would make this fail.
+    const result = spawnSync(process.execPath, [script, ...plan.args, "--pi", join(casesRoot, "pi-must-not-run")], { encoding: "utf8" });
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stdout, new RegExp(`= ${plan.invocations} 次 Pi 启动`));
+    assert.match(result.stdout, /预览不调用模型/);
+  }
+});
+
+test("confirmation case validation rejects duplicate ids and unknown skill references", (t) => {
+  const script = join(repo, "scripts", "replay-skill-triggers.mjs");
+  const source = JSON.parse(readFileSync(join(repo, "benchmarks", "skill-replay", "routing-confirmation.json"), "utf8"));
+  const first = source.cases[0];
+  const temp = mkdtempSync(join(tmpdir(), "skill-replay-confirmation-"));
+  t.after(() => rmSync(temp, { recursive: true, force: true }));
+  const casesPath = join(temp, "cases.json");
+  const invalidCases = [
+    [first, first],
+    [{ ...first, expected: "missing-skill-for-test" }],
+    [{ ...first, forbidden: ["missing-skill-for-test"] }],
+  ];
+  for (const cases of invalidCases) {
+    writeFileSync(casesPath, JSON.stringify({ cases }));
+    const result = spawnSync(process.execPath, [script, "--cases", casesPath, "--pi", join(temp, "pi-must-not-run")], { encoding: "utf8" });
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /无效回放案例/);
+  }
+});
+
 test("CLI defaults to offline preview and live mode isolates the two groups", () => {
   const script = join(repo, "scripts", "replay-skill-triggers.mjs");
   const preview = spawnSync(process.execPath, [script, "--limit", "1", "--runs", "1"], { encoding: "utf8" });
@@ -110,6 +147,58 @@ console.log(JSON.stringify({type:'agent_settled'}));
   const drift = spawnSync(process.execPath, [...args, "--resume", goodOut], { encoding: "utf8" });
   assert.notEqual(drift.status, 0);
   assert.match(drift.stderr, /恢复参数或场景内容/);
+});
+
+test("input drift during a batch invalidates results and stops spending budget", async (t) => {
+  for (const changedInput of ["skill", "fixture", "cases"]) {
+    await t.test(changedInput, (t) => {
+      const temp = mkdtempSync(join(tmpdir(), "skill-replay-drift-"));
+      t.after(() => rmSync(temp, { recursive: true, force: true }));
+      for (const directory of ["scripts", "skills/solution-design", "benchmarks/skill-replay/fixture"]) {
+        mkdirSync(join(temp, directory), { recursive: true });
+      }
+      const script = join(temp, "scripts/replay-skill-triggers.mjs");
+      copyFileSync(join(repo, "scripts/replay-skill-triggers.mjs"), script);
+      const skillPath = join(temp, "skills/solution-design/SKILL.md");
+      const fixturePath = join(temp, "benchmarks/skill-replay/fixture/README.md");
+      const casesPath = join(temp, "benchmarks/skill-replay/cases.json");
+      writeFileSync(skillPath, "original skill");
+      writeFileSync(fixturePath, "original fixture");
+      writeFileSync(casesPath, JSON.stringify({ cases: [{ id: "drift", request: "test", expected: "solution-design", forbidden: [] }] }));
+      const changedPath = { skill: skillPath, fixture: fixturePath, cases: casesPath }[changedInput];
+      const original = readFileSync(changedPath, "utf8");
+      const fake = join(temp, "pi.cjs");
+      writeFileSync(fake, `#!/usr/bin/env node
+const fs=require('node:fs');
+if(process.argv.includes('--skill')){
+ fs.appendFileSync(${JSON.stringify(changedPath)},'\\n ');
+ console.log(JSON.stringify({type:'tool_execution_start',toolCallId:'1',toolName:'read',args:{path:${JSON.stringify(skillPath)}}}));
+ console.log(JSON.stringify({type:'tool_execution_end',toolCallId:'1',isError:false}));
+}
+console.log(JSON.stringify({type:'message_start',message:{role:'assistant'}}));
+console.log(JSON.stringify({type:'message_end',message:{role:'assistant',content:[],stopReason:'stop'}}));
+console.log(JSON.stringify({type:'agent_settled'}));
+`);
+      const wrapper = join(temp, "pi");
+      writeFileSync(wrapper, `#!/bin/sh\nexec "${process.execPath}" "${fake}" "$@"\n`, { mode: 0o755 });
+      const out = join(temp, "out");
+      const budgetPath = join(temp, "budget.json");
+      const args = [script, "--live", "--model", "fake/model", "--runs", "3", "--pi", wrapper, "--max-invocations", "6", "--budget-file", budgetPath];
+      const result = spawnSync(process.execPath, [...args, "--out", out], { encoding: "utf8" });
+      assert.notEqual(result.status, 0);
+      assert.match(result.stderr, /输入.*变化|输入.*漂移/);
+      const records = JSON.parse(readFileSync(join(out, "runs.json"), "utf8"));
+      assert.equal(records.at(-1).valid, false);
+      assert.match(records.at(-1).error.reason, /输入.*变化|输入.*漂移/);
+      assert.equal(JSON.parse(readFileSync(join(out, "summary.json"), "utf8"))[0].status, "invalid");
+      assert.equal(JSON.parse(readFileSync(budgetPath, "utf8")).reservations.length, 2);
+      // Restoring the file must not turn an invalidated run into a resumable pass.
+      writeFileSync(changedPath, original);
+      const resumed = spawnSync(process.execPath, [...args, "--resume", out], { encoding: "utf8" });
+      assert.notEqual(resumed.status, 0);
+      assert.equal(JSON.parse(readFileSync(budgetPath, "utf8")).reservations.length, 2);
+    });
+  }
 });
 
 test("an interrupted reservation is not silently retried", () => {

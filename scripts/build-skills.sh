@@ -6,6 +6,7 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 source_dir="$repo_root/skills"
 target_dir="${AGENT_SKILLS_DIR:-$HOME/.agents/skills}"
 source "$repo_root/scripts/skill-profiles.sh"
+source "$repo_root/scripts/skill-install-common.sh"
 dry_run=false
 prune=false
 declare -a requested_skills=()
@@ -62,22 +63,50 @@ else
 fi
 
 for name in "${!selected[@]}"; do
-  if [[ ! -f "$source_dir/$name/SKILL.md" ]]; then
+  if [[ ! "$name" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ || ! -f "$source_dir/$name/SKILL.md" ]]; then
     printf '未知 Skill：%s\n' "$name" >&2
     exit 2
   fi
 done
 
-mkdir -p -- "$target_dir"
+skill_install_init
+# Validate every target before creating directories, staging, or replacing files.
+for name in "${!selected[@]}"; do
+  target="$target_dir/$name"
+  if [[ -L "$target" ]]; then
+    if [[ "$(readlink "$target")" != "$source_dir/$name" ]]; then
+      printf '冲突：%s 是未知链接，拒绝替换\n' "$target" >&2
+      exit 1
+    fi
+  elif [[ -e "$target" && ( ! -d "$target" || ! -f "$target/.agent-kit-managed" ) ]]; then
+    printf '冲突：%s 不是本仓库管理的快照，拒绝替换\n' "$target" >&2
+    exit 1
+  fi
+done
+
+stage=""
+trap 'if [[ -n "$stage" ]]; then rm -rf -- "$stage"; fi' EXIT
+if [[ "$dry_run" != true ]]; then
+  mkdir -p -- "$target_dir"
+  stage="$(mktemp -d "$target_dir/.agent-kit-stage.XXXXXX")"
+  # Finish all copies first, so a copy failure leaves existing installations intact.
+  for name in "${!selected[@]}"; do
+    cp -R -- "$source_dir/$name" "$stage/$name"
+    : > "$stage/$name/.agent-kit-managed"
+  done
+fi
 for name in "${!selected[@]}"; do
   target="$target_dir/$name"
   if [[ "$dry_run" == true ]]; then
-    printf '计划安装：%s\n' "$target"
+    printf '计划安装（已有目标会先备份）：%s\n' "$target"
     continue
   fi
-  rm -rf -- "$target"
-  cp -R -- "$source_dir/$name" "$target"
-  : > "$target/.agent-kit-managed"
+  skill_last_backup=""
+  if [[ -e "$target" || -L "$target" ]]; then skill_backup_target "$target" "$name"; fi
+  if ! mv -- "$stage/$name" "$target"; then
+    if [[ -n "$skill_last_backup" ]]; then mv -- "$skill_last_backup" "$target"; fi
+    exit 1
+  fi
   printf '已安装：%s\n' "$target"
 done
 

@@ -36,7 +36,7 @@
 ./scripts/build-skills.sh
 ```
 
-默认目标是 `~/.agents/skills/`。设置 `AGENT_SKILLS_DIR` 可以改到其他目录。Agent 通常需要重启才能重新发现 Skill。
+默认目标是 `~/.agents/skills/`。设置 `AGENT_SKILLS_DIR` 可以改到其他目录，但不能与源码目录重叠。快照构建不覆盖未管理目录；已有管理项更新时先备份。预览、备份位置和恢复方式见[脚本说明](scripts/README.md)。Agent 通常需要重启才能重新发现 Skill。
 
 ## 安装 Pi 扩展
 

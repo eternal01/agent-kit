@@ -11,6 +11,14 @@
     {
       "request": "搜索最新漏洞公告并给出来源",
       "expected": "web-research"
+    },
+    {
+      "request": "对比两个厂商关于当前 LTS 支持期限的说法，查原始公告并标出版本与日期",
+      "expected": "web-research"
+    },
+    {
+      "request": "搜索官方文档和源码确认这个 API 的弃用时间；如果搜不到原文就说明限制",
+      "expected": "web-research"
     }
   ],
   "negative": [
@@ -31,6 +39,14 @@
       "forbidden": [
         "web-research"
       ]
+    },
+    {
+      "request": "只根据给定源码解释这个函数的实际控制流，不核验外部版本",
+      "forbidden": ["web-research"]
+    },
+    {
+      "request": "把已提供的几篇文章整理成带来源的学习笔记，不补充新资料",
+      "forbidden": ["web-research"]
     }
   ]
 }

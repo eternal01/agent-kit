@@ -6,6 +6,7 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 source_dir="$repo_root/skills"
 target_dir="${AGENT_SKILLS_DIR:-$HOME/.agents/skills}"
 source "$repo_root/scripts/skill-profiles.sh"
+source "$repo_root/scripts/skill-install-common.sh"
 replace_copies=false
 dry_run=false
 prune=false
@@ -65,31 +66,13 @@ else
 fi
 
 for name in "${!selected[@]}"; do
-  if [[ ! -f "$source_dir/$name/SKILL.md" ]]; then
+  if [[ ! "$name" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ || ! -f "$source_dir/$name/SKILL.md" ]]; then
     printf '未知 Skill：%s\n' "$name" >&2
     exit 2
   fi
 done
 
-mkdir -p -- "$target_dir"
-
-# 清理只可能由本仓库留下、且源码已经删除的旧链接。
-for target in "$target_dir"/*; do
-  [[ -L "$target" ]] || continue
-  link_target="$(readlink "$target")"
-  case "$link_target" in
-    "$source_dir"/*)
-      if [[ ! -f "$link_target/SKILL.md" ]]; then
-        if [[ "$dry_run" == true ]]; then
-          printf '计划删除失效链接：%s -> %s\n' "$target" "$link_target"
-        else
-          rm -- "$target"
-          printf '已删除失效链接：%s -> %s\n' "$target" "$link_target"
-        fi
-      fi
-      ;;
-  esac
-done
+skill_install_init
 
 # 先检查全部冲突，避免执行一半后才失败。
 conflicts=0
@@ -113,6 +96,25 @@ for name in "${!selected[@]}"; do
 done
 [[ "$conflicts" -eq 0 ]] || exit 1
 
+if [[ "$dry_run" != true ]]; then mkdir -p -- "$target_dir"; fi
+# Cleanup happens only after all conflict checks, and is read-only in preview.
+for target in "$target_dir"/*; do
+  [[ -L "$target" ]] || continue
+  link_target="$(readlink "$target")"
+  case "$link_target" in
+    "$source_dir"/*)
+      if [[ ! -f "$link_target/SKILL.md" ]]; then
+        if [[ "$dry_run" == true ]]; then
+          printf '计划删除失效链接：%s -> %s\n' "$target" "$link_target"
+        else
+          rm -- "$target"
+          printf '已删除失效链接：%s -> %s\n' "$target" "$link_target"
+        fi
+      fi
+      ;;
+  esac
+done
+
 for name in "${!selected[@]}"; do
   skill_dir="$source_dir/$name"
   target="$target_dir/$name"
@@ -122,8 +124,12 @@ for name in "${!selected[@]}"; do
     [[ -e "$target" ]] && action='替换副本' || action='创建链接'
     printf '计划%s：%s -> %s\n' "$action" "$target" "$skill_dir"
   else
-    [[ -e "$target" ]] && rm -rf -- "$target"
-    ln -s -- "$skill_dir" "$target"
+    skill_last_backup=""
+    [[ -e "$target" ]] && skill_backup_target "$target" "$name"
+    if ! ln -s -- "$skill_dir" "$target"; then
+      if [[ -n "$skill_last_backup" ]]; then mv -- "$skill_last_backup" "$target"; fi
+      exit 1
+    fi
     printf '已链接：%s -> %s\n' "$target" "$skill_dir"
   fi
 done

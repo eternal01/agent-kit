@@ -9,7 +9,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const skillRoot = join(root, "skills");
 const fixture = join(root, "benchmarks", "skill-replay", "fixture");
 const defaultCases = join(root, "benchmarks", "skill-replay", "cases.json");
-const usage = `用法: node scripts/replay-skill-triggers.mjs [--live --model PROVIDER/MODEL --max-invocations N --budget-file FILE] [--runs 3] [--limit 10] [--out DIR] [--resume DIR] [--cases FILE] [--pi FILE]\n默认只显示 Pi 启动计划；--live 会调用模型并产生费用。预算上限只约束 Pi 启动次数，不保证模型 API 请求次数。`;
+const usage = `用法: node scripts/replay-skill-triggers.mjs [--live --model PROVIDER/MODEL --max-invocations N --budget-file FILE] [--runs 3] [--limit N] [--out DIR] [--resume DIR] [--cases FILE] [--pi FILE]\n默认只显示 Pi 启动计划；--live 会调用模型并产生费用。预算上限只约束 Pi 启动次数，不保证模型 API 请求次数。`;
 
 function parseArgs(argv) {
   const options = { live: false, runs: 3, cases: defaultCases, pi: "pi", limit: Infinity };
@@ -23,7 +23,7 @@ function parseArgs(argv) {
   options.runs = Number(options.runs);
   options.limit = Number(options.limit);
   if (options["max-invocations"] !== undefined) options["max-invocations"] = Number(options["max-invocations"]);
-  if (!Number.isInteger(options.runs) || options.runs < 1 || options.runs > 10) throw new Error("--runs 须为 1～10 的整数");
+  if (!Number.isInteger(options.runs) || options.runs < 1 || options.runs > 15) throw new Error("--runs 须为 1～15 的整数");
   if (!(options.limit === Infinity || Number.isInteger(options.limit) && options.limit > 0)) throw new Error("--limit 须为正整数");
   if (options.live && (!options.model || !options.model.includes("/"))) throw new Error("--live 必须显式指定 --model PROVIDER/MODEL");
   if (options.live && (!Number.isSafeInteger(options["max-invocations"]) || options["max-invocations"] < 1 || !options["budget-file"])) throw new Error("--live 必须设置 --max-invocations 正整数及跨批次共用的 --budget-file");
@@ -175,15 +175,16 @@ export function summarize(records, items, requiredRuns = 1) {
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   if (options.help) { console.log(usage); return; }
+  const fingerprint = options.live ? inputFingerprint(resolve(options.cases)) : null;
   const { cases, names } = loadCases(resolve(options.cases));
   const selected = cases.slice(0, options.limit);
   if (!options.live) { console.log(`预览: ${selected.length} 个案例 × ${options.runs} 次 × 有/无 Skill = ${selected.length * options.runs * 2} 次 Pi 启动（实际模型 API 请求数可能更多）。\n运行需 --live --model、--max-invocations 和 --budget-file；预览不调用模型。`); return; }
   const out = resolve(options.resume || options.out || join(root, ".skill-replay-results", `${new Date().toISOString().replace(/[:.]/g, "-")}-${process.pid}`));
   const budgetPath = resolve(options["budget-file"]);
-  const fingerprint = inputFingerprint(resolve(options.cases));
   if (options.resume) {
     if (!existsSync(join(out, "runs.json")) || !existsSync(join(out, "meta.json"))) throw new Error(`恢复目录缺少 runs.json 或 meta.json: ${out}`);
     const previous = JSON.parse(readFileSync(join(out, "meta.json"), "utf8"));
+    if (previous.inputDriftDetected) throw new Error("该评测已因输入变化失效，不能恢复或覆盖原结果");
     if (previous.model !== options.model || previous.pi !== options.pi || previous.runs !== options.runs || previous.cases !== resolve(options.cases) || previous.budgetPath !== budgetPath || previous.fingerprint !== fingerprint || JSON.stringify(previous.selected) !== JSON.stringify(selected)) throw new Error("恢复参数或场景内容与原运行不符");
   } else if (existsSync(out)) throw new Error(`输出目录已存在，拒绝覆盖: ${out}`);
   mkdirSync(dirname(budgetPath), { recursive: true });
@@ -196,7 +197,8 @@ async function main() {
     mkdirSync(join(out, "traces"), { recursive: true });
     const git = spawnSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" });
     const changes = spawnSync("git", ["status", "--porcelain"], { cwd: root, encoding: "utf8" });
-    const metadata = { model: options.model, pi: options.pi, runs: options.runs, gitCommit: git.status === 0 ? git.stdout.trim() : null, workingTreeDirty: changes.status !== 0 || Boolean(changes.stdout.trim()), date: new Date().toISOString(), fixture, cases: resolve(options.cases), selected, budgetPath, fingerprint };
+    const metadata = options.resume ? JSON.parse(readFileSync(join(out, "meta.json"), "utf8"))
+      : { model: options.model, pi: options.pi, runs: options.runs, gitCommit: git.status === 0 ? git.stdout.trim() : null, workingTreeDirty: changes.status !== 0 || Boolean(changes.stdout.trim()), date: new Date().toISOString(), fixture, cases: resolve(options.cases), selected, budgetPath, fingerprint };
     if (!options.resume) { saveJson(join(out, "meta.json"), metadata); saveJson(join(out, "runs.json"), []); }
     const records = options.resume ? JSON.parse(readFileSync(join(out, "runs.json"), "utf8")) : [];
     const completed = new Set(records.map((record) => `${record.id}:${record.repetition}:${record.group}`));
@@ -208,10 +210,28 @@ async function main() {
       completed.add(key);
     }
     saveJson(join(out, "runs.json"), records);
+    const assertStableInputs = () => {
+      let stable = false;
+      try { stable = inputFingerprint(resolve(options.cases)) === fingerprint; }
+      catch { /* Deleted or unreadable inputs also invalidate the batch. */ }
+      if (stable) return;
+      const reason = "评测输入发生变化或不可读取，整批结果失效；停止追加调用，保留轨迹与已用额度";
+      metadata.inputDriftDetected = true;
+      metadata.inputDriftDetectedAt = new Date().toISOString();
+      saveJson(join(out, "meta.json"), metadata);
+      for (const record of records) {
+        record.valid = false;
+        record.error = { ...record.error, reason };
+      }
+      saveJson(join(out, "runs.json"), records);
+      throw new Error(reason);
+    };
     try {
+      assertStableInputs();
       for (const item of selected) for (let repetition = 1; repetition <= options.runs; repetition++) {
         for (const group of ["without_skill", "with_skill"]) {
           if (completed.has(`${item.id}:${repetition}:${group}`)) continue;
+          assertStableInputs();
           const args = ["--mode", "json", "--no-session", "--offline", "--no-extensions", "--no-prompt-templates", "--no-themes", "--no-context-files", "--no-skills", "--tools", "read", "--model", options.model];
           if (group === "with_skill") for (const name of names) args.push("--skill", join(skillRoot, name));
           args.push("--", item.request);
@@ -221,9 +241,11 @@ async function main() {
           const run = reportRun(await callPi(options.pi, args, tracePath), group, item, repetition, trace);
           records.push(run);
           saveJson(join(out, "runs.json"), records);
+          assertStableInputs();
           console.log(`${item.id} #${repetition} ${group}: ${run.valid ? run.loaded.join(",") || "未加载" : "无效运行"}；已预留 ${budget.reservations.length}/${budget.maxInvocations} 次 Pi 启动`);
         }
       }
+      assertStableInputs();
     } finally {
       saveJson(join(out, "summary.json"), summarize(records, selected, options.runs));
       console.log(`报告: ${out}；触发统计见 summary.json，产物质量请人工对照 runs.json 评审。`);

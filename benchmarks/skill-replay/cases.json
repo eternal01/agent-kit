@@ -59,6 +59,12 @@
       "request": "为 README.md 所述产品比较 PostgreSQL 和 MySQL 时，先设计候选评估维度、退出成本和最小 PoC；当前版本与价格没有联网证据就标为待核验，不用设计系统边界。",
       "expected": "technology-selection",
       "forbidden": ["system-architecture", "implementation-planning"]
+    },
+    {
+      "id": "incident-response-boundary",
+      "request": "模拟报表导出高峰导致登录受影响的线上事故：请组织响应角色、记录态势并给出安全的止损选项和恢复指标；不要连接生产、执行回滚或通知用户。",
+      "expected": "incident-response",
+      "forbidden": ["systematic-debugging", "system-architecture", "grilling", "software-implementation"]
     }
   ]
 }

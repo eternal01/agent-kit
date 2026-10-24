@@ -27,6 +27,14 @@
   ],
   "negative": [
     {
+      "request": "仓库路线图提到未来分区部署；眼下只想知道现有检索组件能否支持按标签筛选，以及后续功能怎么演进。先讨论，不改文件。",
+      "forbidden": ["system-architecture"]
+    },
+    {
+      "request": "筛选行为与验收已定，先比较配置现有模块、局部修改和加适配层的接口影响与回退代价，不必拆任务。",
+      "forbidden": ["system-architecture"]
+    },
+    {
       "request": "设计单页面的用户交互",
       "forbidden": [
         "system-architecture"

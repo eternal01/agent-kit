@@ -21,11 +21,15 @@
 | `node scripts/replay-skill-triggers.mjs --live --model PROVIDER/MODEL --max-invocations N --budget-file /path/to/budget.json` | 在只读模拟仓库中对比有/无 Skill 的触发与输出；按共享预算限制 Pi 启动，不能保证模型 API 请求上限 | 是 |
 | `./tests/scripts/skill-install.test.sh` | 运行 Skill 安装生命周期测试 | 否 |
 
-默认目标是 `~/.agents/skills/`，可用 `AGENT_SKILLS_DIR` 覆盖。`--skill` 和 `--profile` 可重复组合；未选择时安装全部。可用 profile 为 `core-development`、`architecture`、`governance` 和 `knowledge`。`--prune` 只删除指向本仓库的链接，或带 `.agent-kit-managed` 标记的快照。链接脚本默认不替换普通目录；迁移旧副本时显式使用 `--replace-copies`。
+默认目标是 `~/.agents/skills/`，可用 `AGENT_SKILLS_DIR` 覆盖。`--skill` 和 `--profile` 可重复组合；未选择时安装全部。可用 profile 为 `core-development`、`architecture`、`governance`、`knowledge` 和 `operations`。`operations` 包含 `incident-response`、`systematic-debugging` 与 `security-assessment`。`--prune` 只删除指向本仓库的链接，或带 `.agent-kit-managed` 标记的快照。链接脚本默认不替换普通目录；迁移旧副本时显式使用 `--replace-copies`。
+
+两个 Skill 安装脚本会先检查所有选中目标，并拒绝源目录与目标目录相同、互为祖先或经目录软链接重叠的配置。`--dry-run` 不创建目录、不删除失效链接、不备份或安装。快照构建默认只替换带 `.agent-kit-managed` 的已有目录或指向相应源码的链接，遇到未管理目录或未知链接会停止；链接迁移普通副本仍需 `--replace-copies`。
+
+替换已有快照或副本前会备份；默认位置为安装目录同级的 `backups/agent-kit/skills/`，可用 `AGENT_SKILLS_BACKUP_DIR` 指定与源码、安装目录均不重叠的位置。脚本打印每个备份的准确路径。快照先在临时目录完成全部复制，再逐项备份并重命名安装；复制失败不影响原安装。恢复时先核对备份内容，把当前安装移至其他位置，再将备份移回对应 Skill 位置，不覆盖未知改动。`--prune` 是明确删除未选中管理项的操作，不属于替换备份流程。
 
 验证器不调用模型。`evals/triggers.json` 与 `evals/conflicts.json` 是可审查的发现契约，不是实际模型准确率报告。行为评测的用例准备、授权、运行协议和记录格式见[行为对照评测](../benchmarks/skill-behavior/README.md)；Pi 触发回放的用法、费用和数据边界见[回放说明](../benchmarks/skill-replay/README.md)。回放器仅检查触发，不能替代行为评测；运行记录结构通过也不证明证据属实或行为通过。
 
-`core-development` 包含 `session-handoff`；安装生命周期测试在临时目标目录中验证链接、快照与裁剪，不更改真实安装目录。
+`core-development` 包含 `session-handoff`；`operations` 覆盖事故响应、根因调查与安全评估。安装生命周期测试在临时目标目录中验证链接、快照与裁剪，不更改真实安装目录。
 
 ## 文档
 

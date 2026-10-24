@@ -4,29 +4,66 @@
 
 ## 本地运行
 
-先预览次数（不调用模型）：
+先预览正式计划（不调用模型、不预留额度）：
 
 ```bash
-node scripts/replay-skill-triggers.mjs
+node scripts/replay-skill-triggers.mjs --runs 15
 ```
 
-确认模型账号和调用费用后，从仓库根目录运行一轮小样本：
+如只需检查小样本计划，也使用不带 `--live` 的预览：
 
 ```bash
-node scripts/replay-skill-triggers.mjs --live --model PROVIDER/MODEL --limit 2 --runs 1 \
-  --max-invocations 60 --budget-file /path/to/private/replay-budget.json
+node scripts/replay-skill-triggers.mjs --limit 2 --runs 1
 ```
 
-正式运行：
+上述两种预览均不消耗启动额度，可以先后执行；不要在 330 次正式计划之前额外执行付费预跑。若确需付费预跑，须先获得包含预跑在内的总额度授权，并重新安排正式计划；不能通过更换预算文件绕过累计上限。
+
+确认模型账号、运行权限和完整额度后，从仓库根目录正式运行：
 
 ```bash
-node scripts/replay-skill-triggers.mjs --live --model PROVIDER/MODEL --runs 3 \
-  --max-invocations 60 --budget-file /path/to/private/replay-budget.json
+node scripts/replay-skill-triggers.mjs --live --model PROVIDER/MODEL --runs 15 \
+  --max-invocations 330 --budget-file /path/to/private/replay-budget.json
 ```
 
-将 `PROVIDER/MODEL` 换成 `pi --list-models` 中可用的精确模型标识。正式运行默认 10 案例 × 3 次 × 两组，即 **60 次 Pi 启动**；每次可有多轮模型请求和自动重试，不能将启动次数当作 API 调用数或费用上限。`--max-invocations` 与 `--budget-file` 是 live 必填项：同一模型的各批次复用同一个仓库外预算文件，先持久化预留再启动；超出上限会停止，不自动加额。不能并发使用同一预算文件；进程异常退出遗留 `.lock` 时，先核对进程及预留记录再处理。预算文件丢失或更换路径无法继承既有使用量。可指定 `--out DIR`、`--resume DIR`、`--cases FILE`、`--pi FILE`；恢复时保持同一模型、案例、Skill/模拟背景内容及预算文件；输入指纹不同则拒绝混用旧结果。工具不安装依赖、不修改模拟仓库；使用 `--tools read` 并关闭扩展、上下文文件和会话持久化。`--offline` 仅禁止 Pi 自动联网更新目录，**不会阻止模型 API 请求**。如需在不同版本/模型之间比较，保持同一案例、模型、次数和 Pi 配置。
+将 `PROVIDER/MODEL` 换成 `pi --list-models` 中可用的精确模型标识。本次评测配置为 11 案例 × 15 次 × 有/无 Skill 两组，即最多 **330 次 Pi 启动**，对应原 66 次计划 × 5。每次启动可有多轮模型请求和自动重试；330 是启动次数额度，不是 API 请求次数或货币费用上限。`--max-invocations` 与 `--budget-file` 是 live 必填项：同一模型的各批次复用同一个仓库外预算文件，先持久化预留再启动；超出上限会停止，不自动加额。不能并发使用同一预算文件；进程异常退出遗留 `.lock` 时，先核对进程及预留记录再处理。预算文件丢失或更换路径无法继承既有使用量。可指定 `--out DIR`、`--resume DIR`、`--cases FILE`、`--pi FILE`；恢复时保持同一模型、案例、Skill/模拟背景内容及预算文件；输入指纹不同则拒绝混用旧结果。工具不安装依赖、不修改模拟仓库；使用 `--tools read` 并关闭扩展、上下文文件和会话持久化。`--offline` 仅禁止 Pi 自动联网更新目录，**不会阻止模型 API 请求**。如需在不同版本/模型之间比较，保持同一案例、模型、次数和 Pi 配置。
 
-默认结果在 `.skill-replay-results/`（已忽略，不要提交）。`runs.json` 包含完整模型回答，`traces/` 保存 JSONL 原始轨迹；两者可能包含敏感信息，只在可信环境运行。`runs.json` 记录助手消息开始/完成数、自动重试事件和可见 token；**这些是可观察事件，不是精确供应商请求或计费记录**。不完整轨迹与预留但无结果的运行保持无效，不自动重试来掩盖费用。`meta.json` 保存模型和仓库提交，`summary.json` 给出成功读取期望 Skill 的比例、误触发数、基线污染和无效运行。只对所有运行完成的案例判定路由；两组都无法成功完成时标为 `invalid`，不得把请求失败当作未触发。`route_pass` 门槛为至少 2/3 成功触发且零禁用 Skill 加载；这不是内容质量通过。
+默认结果在 `.skill-replay-results/`（已忽略，不要提交）。2026-10-24 的本次真实触发回放记录在 `~/.cache/agent-kit/skill-replay/run-20261024-330/`，额度记录在 `~/.cache/agent-kit/skill-replay/budget-openai-codex-gpt-6-luna.json`；原始文件保存在仓库外，不应提交。`runs.json` 包含完整模型回答，`traces/` 保存 JSONL 原始轨迹；两者可能包含敏感信息，只在可信环境运行。`runs.json` 记录助手消息开始/完成数、自动重试事件和可见 token；**这些是可观察事件，不是精确供应商请求或计费记录**。不完整轨迹与预留但无结果的运行保持无效，不自动重试来掩盖费用。`meta.json` 保存模型和仓库提交，`summary.json` 给出成功读取期望 Skill 的比例、误触发数、基线污染和无效运行。只对所有运行完成的案例判定路由；两组都无法成功完成时标为 `invalid`，不得把请求失败当作未触发。`route_pass` 门槛为至少 2/3 成功触发且零禁用 Skill 加载；这不是内容质量通过。
+
+## 输入一致性
+
+回放前、每次 Pi 启动前后及批次结束时都会复算输入指纹（全部 Skills、模拟背景和案例文件）。一旦发现变化或输入不可读取，立即停止追加调用，将本批已保存记录标为无效，并在 `meta.json` 记录 `inputDriftDetected`；轨迹和已预留额度保留，不自动重试。即使之后恢复了原文件，也不能通过 `--resume` 将已失效批次转成通过。
+
+这是边界时点的漂移检测，不是文件系统沙箱或不可变快照：一次调用内部被修改后又恢复的输入未必可检测。正式对照仍应从事先冻结的独立工作副本运行，整个批次结束前不要修改受测文件；勿把恢复检查或输入摘要当作任务质量证明。该检测未用于下面的历史回放，不据此改写既有运行结果。
+
+## 最近一次真实触发回放（2026-10-24）
+
+- 模型：`openai-codex/gpt-6-luna`；配对 11 案例 × 15 次，共 330 次 Pi 启动，330/330 条记录有效，无基线污染。
+- 运行所在提交：`63bb3f6613557ff37971b5a2ee4dbaf627b82c5c`；当时工作树有未提交变更，对照组为无 Skill，而非该提交中的旧版 Skill。候选输入指纹：`d592b2f5331d2b15b12af7df8aa5fc7bc60d2fe5883d24d56850dcb0a3322d16`。指纹覆盖当时的全部 Skills、模拟背景和案例文件；详情见仓库外 `meta.json`。
+- 路由结果：9/11 案例 `route_pass`，2/11 `route_fail`。`feature-existing-capability` 的期望 Skill 虽在 15/15 次触发，但 12 次同时加载禁用的 `system-architecture`；`planning-paths` 读取期望 Skill 为 10/15 次，其中 1 次同时读取禁用 Skill，因此干净路由为 9/15，合计 6 次加载禁用的 `solution-design`。摘要中的 `triggerRate=0.6` 计算的是干净路由比例，不是单纯的期望 Skill 读取率。这些是待处理的误路由证据，不应通过事后更改本轮判据抹除。
+- 其余 9 个案例均达当前路由门槛，包括新增的 `incident-response-boundary`（15/15 触发且无禁用 Skill）。这只证明该场景的路由样本结果，不能证明事故响应输出整体正确。
+- 全部 Pi 运行有效，观测到自动重试 0 次；可见 token 共 2,275,288，平均约 6,895 token/启动。运行时的可见 token 不是精确 API 请求数或计费记录；330 次额度不是费用封顶。
+
+回放仅测 Skill 自动读取/触发，不评判任务产物质量。请按 `runs.json` 和 `traces/` 人工复核输出；任务行为评测仍见 [Skill 行为对照评测](../skill-behavior/README.md)，未完成的部分不要据本回放宣称通过。
+
+## 回放后路由调优（候选，尚未再回放）
+
+不修改上述原始结果、原 11 个案例或通过门槛。轨迹中 `feature-existing-capability` 的失败样本在读取 README 和 `solution-design` 后又读取 `system-architecture`；`planning-paths` 的部分样本首先读取 `solution-design`。据此提出两项待验证假设：背景架构目标被升级为当前任务，以及实施规划被误认为必须包含任务拆解。
+
+本次仅调整 `solution-design`、`implementation-planning`、`system-architecture` 的描述与边界，并同步实施模板、任务索引和交叉反例：
+
+- 按用户当前要求的产物区分功能行为、代码实施与系统边界，不按背景材料里的“长期”或服务名扩展任务。
+- 功能与关键约束已确认、只比较代码路径或影响面时，也属于实施规划；不额外生成任务。
+- 目标已确认但仍要确定交互或验收时，仍属于功能设计；明确要求故障隔离/部署边界时仍属于架构设计，避免收窄过度。
+
+调优前后的完整目录副本位于仓库外 `~/.cache/agent-kit/skill-replay/tuning-20261024T110130Z/`，`before/` 复算的输入指纹与本轮原始指纹一致。按行为评测文档的路径/长度/字节摘要算法，调优前 Skills 摘要为 `1a0b774c05d927e83f82323ba056b67c2d08f5ebc313ccbf4cae7f9d29ea1515`，候选摘要为 `109db26398e3626542e5dc429a92758d38f7711ba3a0dc5a687b035fbb17772b`；这些是输入标识，不是运行成绩。
+
+原两个失败案例作为开发回归；[确认场景](routing-confirmation.json)提供 4 个尚未运行的相邻请求，覆盖背景架构愿景、仅比较代码路径、已确认目标下的交互取舍，以及真实架构需求。它们只是预留的冻结后确认集，不代表模型从未见过；若据结果继续调优，应转入开发集并补新确认场景。确认集已纳入 `tests/skills/replay-skill-triggers.test.mjs` 的离线预览测试，由现有 CI 测试入口执行；这只验证案例可加载和启动计划，不代表真实路由通过。也可单独预览，不调用模型：
+
+```bash
+node scripts/replay-skill-triggers.mjs --cases benchmarks/skill-replay/routing-confirmation.json
+```
+
+330 次启动额度已经用完。本次只进行静态检查，不创建新预算、不重置旧额度，也不报告调优后的触发改善。下一轮须另获预算并导出冻结快照，在相同环境中比较旧版/候选，保留失败样本；既有脚本的有/无 Skill 回放不等于旧版/候选对照。触发达标后仍需检查任务产物和授权边界。
 
 ## 人工审核产物
 

@@ -1,18 +1,19 @@
 # Skills
 
-本目录包含 17 个可独立安装的 Agent Skill。每个 Skill 只负责一种工作产物；不确定时，先根据下面的任务入口选择，不要把整条流程同时加载。安装时优先选择所需 Skill 或 profile，避免无关上下文稀释。
+本目录包含 18 个可独立安装的 Agent Skill。每个 Skill 只负责一种工作产物；不确定时，先根据下面的任务入口选择，不要把整条流程同时加载。安装时优先选择所需 Skill 或 profile，避免无关上下文稀释。
 
 ## 按任务选择
 
 | 你要做什么 | 使用 |
 |---|---|
 | 挑战高风险方案、追问重大歧义，必要时记录确认结果 | `grilling` |
-| 澄清功能需求，或比较功能的低改动与长期实现方案 | `solution-design` |
+| 澄清或比较功能行为、体验与验收，判断现有能力能否满足场景 | `solution-design` |
 | 设计跨服务边界、数据流、部署和质量属性，并比较架构演进路径 | `system-architecture` |
 | 比较框架、数据库、云服务或供应商 | `technology-selection` |
 | 记录或评审已经讨论过的技术决策 | `architecture-decision` |
-| 对已确认目标比较代码实施路径，选定后拆成实施任务 | `implementation-planning` |
+| 对已确认功能比较代码实施路径与影响面，按需拆成实施任务 | `implementation-planning` |
 | 按确认范围编写、修改或重构代码 | `software-implementation` |
+| 组织生产事故响应、角色分工、状态更新与交接 | `incident-response` |
 | 调查测试失败、缺陷或性能异常的根因 | `systematic-debugging` |
 | 只读审查 diff、提交或 PR | `code-review` |
 | 做威胁建模、攻击面分析或安全专项审查 | `security-assessment` |
@@ -26,11 +27,12 @@
 
 ## 容易混淆的边界
 
-- 单模块功能和用户场景归 `solution-design`；跨服务、部署单元、数据所有权或 SLO 归 `system-architecture`。目标与约束已定、要比较代码实施路径或拆任务时归 `implementation-planning`；明确要求直接改代码归 `software-implementation`。技术方案存在实质取舍时优先比较最小化改动、折衷与长期目标最优三档，不虚构不可行的候选。
+- 按当前请求的产物区分：功能行为、体验和验收归 `solution-design`；服务/部署边界、数据所有权和系统质量属性取舍归 `system-architecture`。背景资料中的长期架构目标不单独触发架构设计。功能已确认、比较代码实施路径或影响面时归 `implementation-planning`，不必要求任务拆解；明确要求直接改代码归 `software-implementation`。仅说“目标已确认”不排除继续比较功能行为；“长期方案”也不等于架构设计。存在实质取舍时按可行性比较，不强凑固定档数。
 - 普通 diff 或反馈成立性审查归 `code-review`；明确要求核验并修正审查意见归 `software-implementation`；威胁模型和安全专项归 `security-assessment`。
 - 项目文档与陌生读者测试归 `technical-documentation`；个人学习文章和复习材料归 `learning-note`；当前任务状态交接归 `session-handoff`，不自动继续实施或保存文件。
 - `web-research` 负责找证据，其他 Skill 负责把证据用于选型、文档或学习材料。
 - `grilling` 用于用户明确要求的压力测试，或确实阻塞任务、需要多轮澄清的重大未决问题；安全、权限、生产或迁移标签本身不触发独立访谈。常规风险检查由当前任务 Skill 完成，其他 Skill 不隐式加载它。用户要求留档时才写入术语、决定或 ADR。
+- `incident-response` 负责生产事故期间的协调、态势、沟通和恢复验证；`systematic-debugging` 负责可复现的技术根因调查。事故止血可以先于根因确定，但生产操作仍需明确授权。
 - 可独立安装的 Skill 应自带完成声明所需的最小证据要求，不依赖本仓库公共规则。Agent Kit 内的完成、修复、可合并或检查通过声明还遵循[项目完成证据规则](../rules/completion-evidence.md)；它不是独立的可发现 Skill。
 - `codebase-onboarding` 还原现有系统；`system-architecture` 设计未来的跨服务或部署结构。
 
